@@ -77,6 +77,13 @@ export interface AssessmentResult {
   subscores: SubscoreResult[];
 }
 
+export function riskBandLabel(score: number): string {
+  if (score >= 80) return "Critical";
+  if (score >= 60) return "High";
+  if (score >= 40) return "Moderate";
+  return "Low";
+}
+
 function clamp(value: number): number {
   return Math.max(0, Math.min(100, Math.round(value)));
 }

@@ -1,6 +1,8 @@
 import { count, desc, eq, isNull } from "drizzle-orm";
 import { getDb } from "../db";
 import {
+  artifacts,
+  clientSegments,
   companies,
   rawItems,
   riskAssessments,
@@ -10,11 +12,14 @@ import {
   runSteps,
   signals,
 } from "../db/schema";
+import { CRM_MODEL, CRM_PROMPT_VERSION, draftCrmFollowUp } from "../drafting/crm";
+import { draftMemo, MEMO_MODEL, MEMO_PROMPT_VERSION } from "../drafting/memo";
 import { RUBRIC, type Dimension } from "../scoring/rubric";
 import {
   assessCompany,
   RISK_MODEL,
   RISK_PROMPT_VERSION,
+  type AssessmentResult,
   type ScoringSignal,
 } from "../scoring/score";
 import {
@@ -22,6 +27,10 @@ import {
   TRIAGE_MODEL,
   TRIAGE_PROMPT_VERSION,
 } from "./triage";
+
+// Composite moves of this size (in points) get an IC memo + CRM follow-up
+// drafted for review.
+const MEMO_THRESHOLD = 10;
 
 export type RunTrigger = "manual" | "cron" | "webhook";
 
@@ -32,6 +41,7 @@ export interface MorningBriefResult {
   signalsCreated: number;
   skipped: number;
   assessmentsCreated: number;
+  artifactsDrafted: number;
   note: string;
 }
 
@@ -168,6 +178,10 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
     let assessmentCount =
       db.select({ n: count() }).from(riskAssessments).get()?.n ?? 0;
     let assessmentsCreated = 0;
+    const scored: {
+      company: typeof companies.$inferSelect;
+      result: AssessmentResult;
+    }[] = [];
 
     for (const [ticker, tickerSignals] of tickersTouched) {
       const company = db
@@ -202,6 +216,7 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
         signals: tickerSignals,
       });
 
+      scored.push({ company, result });
       const assessmentId = nextId("ra", assessmentCount);
       db.insert(riskAssessments)
         .values({
@@ -267,6 +282,101 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
       })
       .run();
 
+    // Step 4: draft IC memo + CRM follow-up for material composite moves.
+    const draftStarted = nowIso();
+    let artifactCount =
+      db.select({ n: count() }).from(artifacts).get()?.n ?? 0;
+    let memosDrafted = 0;
+    let crmDrafted = 0;
+    const material = scored.filter(
+      ({ result }) =>
+        Math.abs(result.composite - result.previous) >= MEMO_THRESHOLD,
+    );
+    const segment = db
+      .select()
+      .from(clientSegments)
+      .orderBy(clientSegments.id)
+      .limit(1)
+      .get();
+
+    for (const { company, result } of material) {
+      const memoId = nextId("art", artifactCount);
+      db.insert(artifacts)
+        .values({
+          id: memoId,
+          type: "memo",
+          ticker: company.ticker,
+          runId,
+          status: "pending",
+          title: `IC memo: ${company.ticker} composite ${result.previous} → ${result.composite}`,
+          contentJson: JSON.stringify(draftMemo({ company, assessment: result })),
+          model: MEMO_MODEL,
+          promptVersion: MEMO_PROMPT_VERSION,
+          createdAt: nowIso(),
+        })
+        .run();
+      artifactCount += 1;
+      memosDrafted += 1;
+
+      if (segment) {
+        const driver = [...result.subscores].sort(
+          (a, b) =>
+            Math.abs(b.score - b.baseline) - Math.abs(a.score - a.baseline),
+        )[0];
+        const driverEvidence = driver.evidence[0];
+        if (driverEvidence) {
+          db.insert(artifacts)
+            .values({
+              id: nextId("art", artifactCount),
+              type: "crm-draft",
+              ticker: company.ticker,
+              runId,
+              status: "pending",
+              title: `Client follow-up: ${segment.name} — ${company.ticker} update`,
+              contentJson: JSON.stringify(
+                draftCrmFollowUp({
+                  company,
+                  composite: result.composite,
+                  previous: result.previous,
+                  driverSignalId: driverEvidence.signalId,
+                  driverHeadline: driverEvidence.quote,
+                  segment,
+                  linkedMemoId: memoId,
+                  now: new Date(),
+                }),
+              ),
+              model: CRM_MODEL,
+              promptVersion: CRM_PROMPT_VERSION,
+              createdAt: nowIso(),
+            })
+            .run();
+          artifactCount += 1;
+          crmDrafted += 1;
+        }
+      }
+    }
+
+    db.insert(runSteps)
+      .values({
+        id: `${runId}:draft`,
+        runId,
+        name: "draft",
+        status: "completed",
+        startedAt: draftStarted,
+        finishedAt: nowIso(),
+        model: MEMO_MODEL,
+        promptVersion: MEMO_PROMPT_VERSION,
+        inputCount: material.length,
+        outputCount: memosDrafted + crmDrafted,
+        costUsd: 0,
+        detail:
+          material.length > 0
+            ? `Drafted ${memosDrafted} memo(s) and ${crmDrafted} CRM follow-up(s) for composite moves >= ${MEMO_THRESHOLD} points.`
+            : `No composite moved >= ${MEMO_THRESHOLD} points; nothing drafted.`,
+      })
+      .run();
+
+    const artifactsDrafted = memosDrafted + crmDrafted;
     const note =
       pending.length === 0
         ? "No new raw items to triage."
@@ -274,7 +384,10 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
           (skipped > 0 ? ` (${skipped} skipped: no watchlist match)` : "") +
           (assessmentsCreated > 0
             ? `. Updated ${assessmentsCreated} risk scores.`
-            : ".");
+            : ".") +
+          (artifactsDrafted > 0
+            ? ` Drafted ${memosDrafted} IC memo and ${crmDrafted} CRM follow-up for review.`
+            : "");
 
     db.update(runs)
       .set({ status: "completed", finishedAt: nowIso(), note })
@@ -288,6 +401,7 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
       signalsCreated: created,
       skipped,
       assessmentsCreated,
+      artifactsDrafted,
       note,
     };
   } catch (error) {
@@ -303,6 +417,7 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
       signalsCreated: 0,
       skipped: 0,
       assessmentsCreated: 0,
+      artifactsDrafted: 0,
       note: message,
     };
   }

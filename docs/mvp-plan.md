@@ -77,7 +77,7 @@ SQLite via Drizzle. Provenance uses join tables, not array columns.
 | M0 ✅ (2026-06-10) | Scaffold repo, dashboard shell, seeded watchlist, fixture-backed signal feed and run history | App boots offline and shows companies |
 | M1 ✅ (2026-06-10) | SQLite/Drizzle/Zod, raw-item ingestion, deterministic DEMO_MODE triage, `POST /api/runs/morning-brief`, real run history | Run button creates run, step, and signal rows offline with no API keys |
 | M2 ✅ (2026-06-10) | Risk scorer, score history, planted export-control event, provenance panel | Planted event moves a score; rationale cites it; every number traces to sources |
-| M3 | Memo writer, review queue, CRM outbox, claim extraction on approval | Approval creates CRM-shaped JSON and approved-claim rows; rejection creates neither |
+| M3 ✅ (2026-06-10) | Memo writer, review queue, CRM outbox, claim extraction on approval | Approval creates CRM-shaped JSON and approved-claim rows; rejection creates neither |
 | M4 | Weekly AI radar; investor brief assembled from approved claims only, with compliance checks, client page, and delivery log | Unapproved claims provably cannot render on the client surface |
 | M5 | README polish, demo reset command, GitHub Actions cron + n8n export, eval script, short recording | Fresh offline clone reaches the full demo in three commands |
 

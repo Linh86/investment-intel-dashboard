@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { riskBandLabel } from "@/lib/scoring/score";
 import type { RunStatus, SignalType, Urgency } from "@/lib/types";
 
 export type PillTone =
@@ -79,15 +80,20 @@ export function RunStatusPill({ status }: { status: RunStatus }) {
   );
 }
 
+const BAND_STYLES: Record<string, { tone: PillTone; bar: string }> = {
+  Critical: { tone: "red", bar: "bg-red-400" },
+  High: { tone: "orange", bar: "bg-orange-400" },
+  Moderate: { tone: "amber", bar: "bg-amber-400" },
+  Low: { tone: "emerald", bar: "bg-emerald-400" },
+};
+
 export function riskBand(score: number): {
   label: string;
   tone: PillTone;
   bar: string;
 } {
-  if (score >= 80) return { label: "Critical", tone: "red", bar: "bg-red-400" };
-  if (score >= 60) return { label: "High", tone: "orange", bar: "bg-orange-400" };
-  if (score >= 40) return { label: "Moderate", tone: "amber", bar: "bg-amber-400" };
-  return { label: "Low", tone: "emerald", bar: "bg-emerald-400" };
+  const label = riskBandLabel(score);
+  return { label, ...BAND_STYLES[label] };
 }
 
 export function RiskScore({

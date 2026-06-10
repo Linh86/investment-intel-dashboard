@@ -1,6 +1,8 @@
 import { count, desc, eq, sum } from "drizzle-orm";
 import { getDb } from "./db";
 import {
+  approvals,
+  artifacts as artifactsTable,
   companies as companiesTable,
   rawItems,
   riskAssessments,
@@ -11,6 +13,92 @@ import {
   signals as signalsTable,
 } from "./db/schema";
 import type { Company, RunRecord, Signal } from "./types";
+
+export type ArtifactStatus = "pending" | "approved" | "rejected";
+export type ArtifactType = "memo" | "crm-draft";
+
+export interface ArtifactView {
+  id: string;
+  type: ArtifactType;
+  ticker: string;
+  runId: string;
+  status: ArtifactStatus;
+  title: string;
+  contentJson: string;
+  model: string;
+  promptVersion: string;
+  createdAt: string;
+  approval: {
+    decision: string;
+    reviewer: string;
+    note: string | null;
+    decidedAt: string;
+  } | null;
+}
+
+function toArtifactView(
+  row: typeof artifactsTable.$inferSelect,
+  approvalRows: (typeof approvals.$inferSelect)[],
+): ArtifactView {
+  const approval = approvalRows.find((a) => a.artifactId === row.id);
+  return {
+    id: row.id,
+    type: row.type as ArtifactType,
+    ticker: row.ticker,
+    runId: row.runId,
+    status: row.status as ArtifactStatus,
+    title: row.title,
+    contentJson: row.contentJson,
+    model: row.model,
+    promptVersion: row.promptVersion,
+    createdAt: row.createdAt,
+    approval: approval
+      ? {
+          decision: approval.decision,
+          reviewer: approval.reviewer,
+          note: approval.note,
+          decidedAt: approval.decidedAt,
+        }
+      : null,
+  };
+}
+
+export function getArtifacts(filter?: {
+  status?: ArtifactStatus;
+  type?: ArtifactType;
+}): ArtifactView[] {
+  const db = getDb();
+  let rows = db
+    .select()
+    .from(artifactsTable)
+    .orderBy(desc(artifactsTable.createdAt))
+    .all();
+  if (filter?.status) rows = rows.filter((r) => r.status === filter.status);
+  if (filter?.type) rows = rows.filter((r) => r.type === filter.type);
+  const approvalRows = db.select().from(approvals).all();
+  return rows.map((row) => toArtifactView(row, approvalRows));
+}
+
+export function getArtifact(id: string): ArtifactView | null {
+  const db = getDb();
+  const row = db
+    .select()
+    .from(artifactsTable)
+    .where(eq(artifactsTable.id, id))
+    .get();
+  if (!row) return null;
+  return toArtifactView(row, db.select().from(approvals).all());
+}
+
+export function getPendingArtifactCount(): number {
+  return (
+    getDb()
+      .select({ n: count() })
+      .from(artifactsTable)
+      .where(eq(artifactsTable.status, "pending"))
+      .get()?.n ?? 0
+  );
+}
 
 export interface CompanyRisk {
   /** Latest assessed composite, falling back to the seeded baseline. */

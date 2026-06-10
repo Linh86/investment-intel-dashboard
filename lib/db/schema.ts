@@ -122,6 +122,36 @@ export const riskEvidence = sqliteTable("risk_evidence", {
   delta: integer("delta").notNull(),
 });
 
+// Reviewable pipeline outputs (IC memos, CRM drafts). Nothing leaves the
+// system while status = pending; the review queue decides.
+export const artifacts = sqliteTable("artifacts", {
+  id: text("id").primaryKey(),
+  type: text("type").notNull(), // memo | crm-draft
+  ticker: text("ticker")
+    .notNull()
+    .references(() => companies.ticker),
+  runId: text("run_id")
+    .notNull()
+    .references(() => runs.id),
+  status: text("status").notNull().default("pending"), // pending | approved | rejected
+  title: text("title").notNull(),
+  contentJson: text("content_json").notNull(),
+  model: text("model").notNull(),
+  promptVersion: text("prompt_version").notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
+export const approvals = sqliteTable("approvals", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  artifactId: text("artifact_id")
+    .notNull()
+    .references(() => artifacts.id),
+  decision: text("decision").notNull(), // approved | rejected
+  reviewer: text("reviewer").notNull(),
+  note: text("note"),
+  decidedAt: text("decided_at").notNull(),
+});
+
 // Approved statements extracted from reviewed artifacts (M3). Only rows with
 // status = approved may ever reach an investor-facing surface (M4).
 export const claims = sqliteTable("claims", {

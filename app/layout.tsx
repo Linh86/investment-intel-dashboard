@@ -14,9 +14,7 @@ export const metadata: Metadata = {
 };
 
 const ROADMAP = [
-  { label: "Risk Scoring", milestone: "M2" },
-  { label: "IC Memos", milestone: "M3" },
-  { label: "Review Queue", milestone: "M3" },
+  { label: "Investor Brief", milestone: "M4" },
   { label: "AI Radar", milestone: "M4" },
 ];
 
@@ -41,6 +39,8 @@ export default function RootLayout({
             <nav className="mt-8 flex flex-col gap-1">
               <NavLink href="/" label="Watchlist" />
               <NavLink href="/signals" label="Signal Feed" />
+              <NavLink href="/review" label="Review Queue" />
+              <NavLink href="/outbox" label="CRM Outbox" />
               <NavLink href="/runs" label="Run History" />
             </nav>
             <div className="mt-8 px-2 text-[11px] font-medium uppercase tracking-wider text-slate-600">

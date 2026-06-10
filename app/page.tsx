@@ -4,6 +4,7 @@ import { RunBriefButton } from "@/components/run-brief-button";
 import { PageHeader, Pill, RiskScore, StatCard } from "@/components/ui";
 import type { PillTone } from "@/components/ui";
 import {
+  getPendingArtifactCount,
   getRuns,
   getSignals,
   getWatchlist,
@@ -51,8 +52,8 @@ export default function WatchlistPage() {
         />
         <StatCard
           label="Pending approvals"
-          value={0}
-          hint="review gate lands in M3"
+          value={getPendingArtifactCount()}
+          hint="in the review queue"
         />
         <StatCard
           label="Last run"

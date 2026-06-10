@@ -106,19 +106,21 @@ Close with the business value: analyst time saved, more consistent research, str
 
 ## Repository Status
 
-M0–M2 complete: Next.js + TypeScript dashboard backed by SQLite (Drizzle). The morning-brief pipeline triages raw public-source items into Zod-validated signals, then rescores affected companies against a versioned rubric (`risk-rubric.v1`): five evidence-backed subscores combined into a composite 0–100 in plain code, never by a model. Every score links to a provenance page — evidence quotes, source links, rubric/model/prompt versions, and score history. Both agents are deterministic and rule-based in DEMO_MODE (the default), so the demo needs no API keys; LLM implementations slot in behind the same schemas. Claim, client-segment, and investor-brief tables are already in place for M3/M4.
+M0–M3 complete: Next.js + TypeScript dashboard backed by SQLite (Drizzle). One morning-brief run triages raw public-source items into Zod-validated signals, rescores affected companies against a versioned rubric (`risk-rubric.v1`) with evidence-backed subscores, and — when a composite moves 10+ points — drafts an IC memo and a CRM follow-up into a human review queue. Approving a memo extracts its cited statements into approved claims (the only content eligible for investor-facing surfaces in M4); approving a CRM draft lands it in the outbox as HubSpot-shaped JSON with a full governance block (linked memo, source signals, approver, timestamp). Rejected artifacts never leave the system. Every agent is deterministic and rule-based in DEMO_MODE (the default), so the demo needs no API keys; LLM implementations slot in behind the same schemas.
 
 Current layout:
 
-- `app/` — dashboard pages (watchlist, signal feed, run history, company risk provenance) and the run API route
+- `app/` — dashboard pages (watchlist, signals, review queue, outbox, memos, run history, company provenance) and the run API route
 - `components/` — shared UI primitives
 - `lib/db/` — Drizzle schema and SQLite client
 - `lib/pipeline/` — morning-brief pipeline and DEMO_MODE triage
 - `lib/scoring/` — risk rubric loader and deterministic scorer
+- `lib/drafting/` — memo and CRM drafters (structured citations)
+- `lib/review.ts` — approval gate with claim extraction
 - `data/fixtures/` — synthetic watchlist, signals, runs, and raw items
 - `data/rubric/` — versioned risk-rubric weights
 - `scripts/` — database reset/seed
 - `drizzle/` — generated SQL migrations
 
-Next milestone is M3 (memo writer, review queue, CRM outbox, claim extraction). The full plan is in [docs/mvp-plan.md](docs/mvp-plan.md).
+Next milestone is M4 (weekly AI radar + investor brief built from approved claims only). The full plan is in [docs/mvp-plan.md](docs/mvp-plan.md).
 
