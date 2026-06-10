@@ -1,0 +1,11 @@
+{
+  "version": "disclosures.v1",
+  "note": "Placeholder compliance copy for the demo. In a real deployment this file is owned, reviewed, and versioned by the compliance team; published briefs record the exact version they shipped with.",
+  "blocks": {
+    "informational": "This brief is provided for informational purposes only and does not constitute investment advice, an offer, or a solicitation of any kind.",
+    "ai-assistance": "Portions of this brief were drafted with AI assistance. Every statement was reviewed and approved by a named analyst before publication; approval records and source links are retained for audit.",
+    "demo-synthetic": "Demo notice: all client segments, portfolio exposures, signals, and sources in this document are synthetic fixtures created for demonstration purposes.",
+    "us": "For US recipients: this material is intended for institutional recipients only and is not a personalized recommendation. (Placeholder text — not legal language.)",
+    "eu": "For EU recipients: this material is a marketing communication and has not been prepared in accordance with requirements designed to promote the independence of investment research. (Placeholder text — not legal language.)"
+  }
+}

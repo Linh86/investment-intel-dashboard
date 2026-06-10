@@ -1,0 +1,34 @@
+{
+  "note": "Synthetic demo fixture. Fictional theme exposures for investor-brief demos — no real positions, allocations, or client data.",
+  "asOf": "2026-06-08",
+  "themes": [
+    {
+      "key": "ai-compute",
+      "label": "AI Compute & Accelerators",
+      "weightPct": 35,
+      "tickers": ["NVDA"],
+      "note": "Core exposure to AI training and inference silicon."
+    },
+    {
+      "key": "fab-litho",
+      "label": "Foundry & Lithography",
+      "weightPct": 30,
+      "tickers": ["TSM", "ASML"],
+      "note": "Manufacturing backbone for leading-edge semiconductors."
+    },
+    {
+      "key": "power-cooling",
+      "label": "Data-center Power & Cooling",
+      "weightPct": 20,
+      "tickers": ["VRT"],
+      "note": "Physical infrastructure for AI build-outs."
+    },
+    {
+      "key": "clean-generation",
+      "label": "Clean Power Generation",
+      "weightPct": 15,
+      "tickers": ["CEG"],
+      "note": "Contracted clean energy supplying data-center load."
+    }
+  ]
+}

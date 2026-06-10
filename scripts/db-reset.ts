@@ -1,14 +1,28 @@
 // Resets data/app.db and seeds it from the synthetic fixtures:
 // companies + historical signals/runs (so the dashboard starts populated)
 // plus untriaged raw items for the morning-brief pipeline to consume.
+//
+// Rows are wiped in place rather than deleting the database file: a running
+// dev/prod server keeps its sqlite connection open, and unlinking the file
+// would leave it serving (and writing to) a phantom inode until restart.
 import { createHash } from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import { DB_PATH, getDb } from "../lib/db";
 import {
+  approvals,
+  artifacts,
+  claimSignals,
+  claims,
   clientSegments,
   companies,
+  deliveryLog,
+  investorBriefs,
   rawItems,
+  riskAssessments,
+  riskEvidence,
+  riskSubscores,
+  runSteps,
   runs,
   signals,
 } from "../lib/db/schema";
@@ -74,11 +88,30 @@ function hashUrl(url: string): string {
 
 const now = new Date().toISOString();
 
-for (const suffix of ["", "-wal", "-shm"]) {
-  fs.rmSync(`${DB_PATH}${suffix}`, { force: true });
-}
-
 const db = getDb();
+
+// Children before parents (foreign keys are enforced).
+db.transaction((tx) => {
+  for (const table of [
+    deliveryLog,
+    investorBriefs,
+    claimSignals,
+    claims,
+    approvals,
+    artifacts,
+    riskEvidence,
+    riskSubscores,
+    riskAssessments,
+    runSteps,
+    signals,
+    runs,
+    rawItems,
+    clientSegments,
+    companies,
+  ]) {
+    tx.delete(table).run();
+  }
+});
 
 const watchlist = readFixture<WatchlistFixture>("watchlist.json");
 db.insert(companies).values(watchlist.companies).run();

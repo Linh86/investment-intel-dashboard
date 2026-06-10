@@ -126,10 +126,9 @@ export const riskEvidence = sqliteTable("risk_evidence", {
 // system while status = pending; the review queue decides.
 export const artifacts = sqliteTable("artifacts", {
   id: text("id").primaryKey(),
-  type: text("type").notNull(), // memo | crm-draft
-  ticker: text("ticker")
-    .notNull()
-    .references(() => companies.ticker),
+  type: text("type").notNull(), // memo | crm-draft | radar
+  // Null for artifacts that are not company-specific (weekly radar).
+  ticker: text("ticker").references(() => companies.ticker),
   runId: text("run_id")
     .notNull()
     .references(() => runs.id),
@@ -157,6 +156,7 @@ export const approvals = sqliteTable("approvals", {
 export const claims = sqliteTable("claims", {
   id: text("id").primaryKey(),
   claimText: text("claim_text").notNull(),
+  kind: text("kind").notNull().default("key-change"), // key-change | risk
   status: text("status").notNull().default("proposed"), // proposed | approved | rejected
   artifactRef: text("artifact_ref"),
   approvedBy: text("approved_by"),
@@ -199,6 +199,8 @@ export const investorBriefs = sqliteTable("investor_briefs", {
   disclosureVersions: text("disclosure_versions"),
   publishedAt: text("published_at"),
   publishedBy: text("published_by"),
+  reviewedBy: text("reviewed_by"),
+  reviewNote: text("review_note"),
   createdAt: text("created_at").notNull(),
 });
 

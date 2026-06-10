@@ -1,15 +1,23 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader, Pill } from "@/components/ui";
+import type { PillTone } from "@/components/ui";
 import { getArtifacts } from "@/lib/data";
-import type { ArtifactView } from "@/lib/data";
+import type { ArtifactType, ArtifactView } from "@/lib/data";
 import { crmDraftContentSchema } from "@/lib/drafting/crm";
 import { memoContentSchema } from "@/lib/drafting/memo";
+import { radarContentSchema } from "@/lib/drafting/radar";
 import { formatDateTime } from "@/lib/format";
 import { reviewAction } from "./actions";
 
 export const metadata: Metadata = { title: "Review Queue" };
 export const dynamic = "force-dynamic";
+
+const TYPE_PILLS: Record<ArtifactType, { label: string; tone: PillTone }> = {
+  memo: { label: "IC memo", tone: "violet" },
+  "crm-draft": { label: "CRM draft", tone: "sky" },
+  radar: { label: "Radar", tone: "emerald" },
+};
 
 function MemoPreview({ artifact }: { artifact: ArtifactView }) {
   const memo = memoContentSchema.parse(JSON.parse(artifact.contentJson));
@@ -67,6 +75,26 @@ function CrmPreview({ artifact }: { artifact: ArtifactView }) {
   );
 }
 
+function RadarPreview({ artifact }: { artifact: ArtifactView }) {
+  const radar = radarContentSchema.parse(JSON.parse(artifact.contentJson));
+  return (
+    <div className="flex flex-col gap-2 text-sm">
+      <p className="text-xs text-slate-500">{radar.period}</p>
+      <ul className="flex flex-col gap-1.5">
+        {radar.sections.map((section) => (
+          <li key={section.category} className="text-slate-400">
+            <span className="font-medium text-slate-300">{section.label}</span>{" "}
+            · {section.items.length}{" "}
+            {section.items.length === 1 ? "item" : "items"} — first: “
+            {section.items[0].title}”
+          </li>
+        ))}
+      </ul>
+      <p className="text-xs text-slate-500">Appears on /radar after approval.</p>
+    </div>
+  );
+}
+
 export default function ReviewQueuePage() {
   const pending = getArtifacts({ status: "pending" });
   return (
@@ -90,18 +118,20 @@ export default function ReviewQueuePage() {
               className="rounded-xl border border-slate-800 bg-slate-900/40 p-5"
             >
               <div className="flex flex-wrap items-center gap-2">
-                <Pill tone={artifact.type === "memo" ? "violet" : "sky"}>
-                  {artifact.type === "memo" ? "IC memo" : "CRM draft"}
+                <Pill tone={TYPE_PILLS[artifact.type].tone}>
+                  {TYPE_PILLS[artifact.type].label}
                 </Pill>
                 <span className="font-mono text-xs text-slate-500">
                   {artifact.id}
                 </span>
-                <Link
-                  href={`/companies/${artifact.ticker}`}
-                  className="font-mono text-xs text-slate-400 transition-colors hover:text-slate-200"
-                >
-                  {artifact.ticker}
-                </Link>
+                {artifact.ticker ? (
+                  <Link
+                    href={`/companies/${artifact.ticker}`}
+                    className="font-mono text-xs text-slate-400 transition-colors hover:text-slate-200"
+                  >
+                    {artifact.ticker}
+                  </Link>
+                ) : null}
                 <span className="ml-auto text-xs text-slate-600">
                   {formatDateTime(artifact.createdAt)} · {artifact.runId} ·{" "}
                   {artifact.model} · {artifact.promptVersion}
@@ -113,6 +143,8 @@ export default function ReviewQueuePage() {
               <div className="mt-3 border-l-2 border-slate-800 pl-4">
                 {artifact.type === "memo" ? (
                   <MemoPreview artifact={artifact} />
+                ) : artifact.type === "radar" ? (
+                  <RadarPreview artifact={artifact} />
                 ) : (
                   <CrmPreview artifact={artifact} />
                 )}

@@ -1,0 +1,85 @@
+{
+  "note": "Synthetic demo fixture. External AI-ecosystem items for the weekly scout — separate from watchlist raw items. Headlines, sources, and URLs are invented for the demo.",
+  "items": [
+    {
+      "id": "rad-001",
+      "title": "Hyperscaler announces multi-region AI data-center expansion program",
+      "snippet": "A major cloud provider outlined a multi-region data-center expansion focused on AI training capacity, with first sites breaking ground this quarter.",
+      "sourceName": "Synthetic AI Wire",
+      "sourceUrl": "https://example.com/fixtures/rad-001",
+      "publishedAt": "2026-06-09T08:00:00Z"
+    },
+    {
+      "id": "rad-002",
+      "title": "Rack-density benchmarks shift cooling requirements for AI clusters",
+      "snippet": "New deployment data shows rack densities for AI clusters exceeding prior data-center design envelopes, pushing liquid cooling from optional to default.",
+      "sourceName": "Synthetic AI Wire",
+      "sourceUrl": "https://example.com/fixtures/rad-002",
+      "publishedAt": "2026-06-08T15:30:00Z"
+    },
+    {
+      "id": "rad-003",
+      "title": "Grid operator opens fast-track interconnection pilot for data centers",
+      "snippet": "A regional grid operator launched a pilot to accelerate interconnection queues for large data-center loads paired with new clean generation.",
+      "sourceName": "Synthetic Energy Desk",
+      "sourceUrl": "https://example.com/fixtures/rad-003",
+      "publishedAt": "2026-06-09T11:15:00Z"
+    },
+    {
+      "id": "rad-004",
+      "title": "Nuclear power purchase agreements trend longer in data-center contracts",
+      "snippet": "Recent power purchase agreements between nuclear operators and data-center developers show longer tenors and firmer capacity commitments.",
+      "sourceName": "Synthetic Energy Desk",
+      "sourceUrl": "https://example.com/fixtures/rad-004",
+      "publishedAt": "2026-06-07T09:45:00Z"
+    },
+    {
+      "id": "rad-005",
+      "title": "Advanced packaging capacity remains the key silicon supply bottleneck",
+      "snippet": "Industry checks continue to identify advanced packaging, not wafer starts, as the binding constraint on AI accelerator supply through next year.",
+      "sourceName": "Synthetic Chip Brief",
+      "sourceUrl": "https://example.com/fixtures/rad-005",
+      "publishedAt": "2026-06-08T13:00:00Z"
+    },
+    {
+      "id": "rad-006",
+      "title": "Next-generation HBM roadmap update points to capacity race",
+      "snippet": "Memory vendors updated high-bandwidth memory roadmaps, signaling an intensifying capacity race tied to accelerator demand.",
+      "sourceName": "Synthetic Chip Brief",
+      "sourceUrl": "https://example.com/fixtures/rad-006",
+      "publishedAt": "2026-06-06T10:30:00Z"
+    },
+    {
+      "id": "rad-007",
+      "title": "Open-source agent-orchestration framework reaches 1.0 release",
+      "snippet": "A widely used open-source framework for orchestrating LLM agent workflows shipped its 1.0 release with stable APIs for tool use and evaluation hooks.",
+      "sourceName": "Synthetic Dev Brief",
+      "sourceUrl": "https://example.com/fixtures/rad-007",
+      "publishedAt": "2026-06-09T14:00:00Z"
+    },
+    {
+      "id": "rad-008",
+      "title": "Workflow automation platform adds native LLM evaluation hooks",
+      "snippet": "A popular workflow automation platform added first-class support for LLM steps with built-in evaluation and structured-output validation.",
+      "sourceName": "Synthetic Dev Brief",
+      "sourceUrl": "https://example.com/fixtures/rad-008",
+      "publishedAt": "2026-06-07T16:20:00Z"
+    },
+    {
+      "id": "rad-009",
+      "title": "Public demo shows schema-validated research agents with audit trails",
+      "snippet": "A public demo walked through schema-validated research agents producing auditable outputs with per-step provenance — a useful pattern to show the team.",
+      "sourceName": "Synthetic Dev Brief",
+      "sourceUrl": "https://example.com/fixtures/rad-009",
+      "publishedAt": "2026-06-08T09:10:00Z"
+    },
+    {
+      "id": "rad-010",
+      "title": "CLI demo turns RSS metadata into a structured signal store",
+      "snippet": "A small open-source CLI demo ingests RSS metadata into a queryable signal store with hashes and source links — worth a look for the research stack.",
+      "sourceName": "Synthetic Dev Brief",
+      "sourceUrl": "https://example.com/fixtures/rad-010",
+      "publishedAt": "2026-06-06T18:40:00Z"
+    }
+  ]
+}

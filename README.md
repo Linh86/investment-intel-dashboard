@@ -106,21 +106,25 @@ Close with the business value: analyst time saved, more consistent research, str
 
 ## Repository Status
 
-M0–M3 complete: Next.js + TypeScript dashboard backed by SQLite (Drizzle). One morning-brief run triages raw public-source items into Zod-validated signals, rescores affected companies against a versioned rubric (`risk-rubric.v1`) with evidence-backed subscores, and — when a composite moves 10+ points — drafts an IC memo and a CRM follow-up into a human review queue. Approving a memo extracts its cited statements into approved claims (the only content eligible for investor-facing surfaces in M4); approving a CRM draft lands it in the outbox as HubSpot-shaped JSON with a full governance block (linked memo, source signals, approver, timestamp). Rejected artifacts never leave the system. Every agent is deterministic and rule-based in DEMO_MODE (the default), so the demo needs no API keys; LLM implementations slot in behind the same schemas.
+M0–M4 complete: Next.js + TypeScript dashboard backed by SQLite (Drizzle). One morning-brief run triages raw public-source items into Zod-validated signals, rescores affected companies against a versioned rubric (`risk-rubric.v1`) with evidence-backed subscores, and — when a composite moves 10+ points — drafts an IC memo and a CRM follow-up into a human review queue. Approving a memo extracts its cited statements into approved claims; approving a CRM draft lands it in the outbox as HubSpot-shaped JSON with a full governance block. A weekly scout drafts a Monday AI radar behind the same gate.
+
+On top of that sits the investor transparency layer: briefs for fictional client segments are assembled **exclusively from approved claims** plus a synthetic portfolio fixture, pass a deterministic compliance lint (forbidden-phrase blocklist, required jurisdiction-aware disclosures, risk/opportunity balance, per-claim provenance), and publish to a read-only client page with AI-assistance labels and numbered public sources — no model, prompt, or internal identifiers anywhere on the client surface. Publishing re-checks every claim's approval (tamper-evident) and writes a delivery log. Rejected artifacts never leave the system. Every agent is deterministic and rule-based in DEMO_MODE (the default), so the demo needs no API keys; LLM implementations slot in behind the same schemas.
 
 Current layout:
 
-- `app/` — dashboard pages (watchlist, signals, review queue, outbox, memos, run history, company provenance) and the run API route
+- `app/` — dashboard pages (watchlist, signals, review queue, outbox, memos, radar, briefs, client view, run history, company provenance) and run/brief API routes
 - `components/` — shared UI primitives
 - `lib/db/` — Drizzle schema and SQLite client
-- `lib/pipeline/` — morning-brief pipeline and DEMO_MODE triage
+- `lib/pipeline/` — morning-brief and weekly-radar pipelines, DEMO_MODE triage
 - `lib/scoring/` — risk rubric loader and deterministic scorer
-- `lib/drafting/` — memo and CRM drafters (structured citations)
+- `lib/drafting/` — memo, CRM, and radar drafters (structured citations)
 - `lib/review.ts` — approval gate with claim extraction
-- `data/fixtures/` — synthetic watchlist, signals, runs, and raw items
+- `lib/briefing/` — investor-brief generator, compliance lint, publish gate
+- `data/fixtures/` — synthetic watchlist, signals, runs, raw items, AI news, portfolio
 - `data/rubric/` — versioned risk-rubric weights
+- `data/disclosures/` — versioned placeholder disclosure blocks (US/EU)
 - `scripts/` — database reset/seed
 - `drizzle/` — generated SQL migrations
 
-Next milestone is M4 (weekly AI radar + investor brief built from approved claims only). The full plan is in [docs/mvp-plan.md](docs/mvp-plan.md).
+Next milestone is M5 (README as application centerpiece, demo reset polish, GitHub Actions cron + n8n export, eval script, short recording). The full plan is in [docs/mvp-plan.md](docs/mvp-plan.md).
 

@@ -78,7 +78,7 @@ SQLite via Drizzle. Provenance uses join tables, not array columns.
 | M1 ✅ (2026-06-10) | SQLite/Drizzle/Zod, raw-item ingestion, deterministic DEMO_MODE triage, `POST /api/runs/morning-brief`, real run history | Run button creates run, step, and signal rows offline with no API keys |
 | M2 ✅ (2026-06-10) | Risk scorer, score history, planted export-control event, provenance panel | Planted event moves a score; rationale cites it; every number traces to sources |
 | M3 ✅ (2026-06-10) | Memo writer, review queue, CRM outbox, claim extraction on approval | Approval creates CRM-shaped JSON and approved-claim rows; rejection creates neither |
-| M4 | Weekly AI radar; investor brief assembled from approved claims only, with compliance checks, client page, and delivery log | Unapproved claims provably cannot render on the client surface |
+| M4 ✅ (2026-06-10) | Weekly AI radar; investor brief assembled from approved claims only, with compliance checks, client page, and delivery log | Unapproved claims provably cannot render on the client surface |
 | M5 | README polish, demo reset command, GitHub Actions cron + n8n export, eval script, short recording | Fresh offline clone reaches the full demo in three commands |
 
 ## Approved Claims And Client Transparency
@@ -92,8 +92,9 @@ Rules, enforced in code rather than in prompts:
 
 - Only approved artifacts can become investor-facing. The brief assembler and the client page both join through `claims` with `status = approved`; an unapproved claim fails validation at generation time and again at publish time.
 - No raw LLM output is ever rendered on a client-facing path. The client page reads only frozen, published snapshots.
-- No performance predictions or advice language by default; deterministic checks block publishing, and any exception requires an explicit recorded review.
+- No performance predictions or advice language by default: a deterministic, versioned blocklist (v0 — exact-phrase matching after whitespace normalization, scanning all client-visible text including source names and disclosure copy) plus structural rules block publishing. The list is a starting point a real compliance team would own and extend.
 - Opportunity statements must be paired with risk statements.
+- Published briefs are trusted immutable snapshots: the publish gate (lint + per-claim approval re-check) is the only code path that sets a brief to published. Direct database write access is outside the demo's threat model; the audit trail records who published what, when.
 - Every brief carries "for informational purposes only — not investment advice" labeling, an AI-assistance disclosure, and per-section labels distinguishing AI-assisted drafts from analyst-authored text, with approver and date.
 - Published briefs are immutable; corrections create a superseding version. The delivery log records who received what, when.
 - Disclosure copy lives as versioned files in the repo (placeholder text; a real deployment's compliance team owns it), and published briefs record the versions they shipped with.

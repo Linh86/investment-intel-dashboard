@@ -69,7 +69,8 @@ export default async function MemoPage({
 }) {
   const { id } = await params;
   const artifact = getArtifact(id);
-  if (!artifact || artifact.type !== "memo") notFound();
+  if (!artifact || artifact.type !== "memo" || !artifact.ticker) notFound();
+  const ticker = artifact.ticker;
   const memo = memoContentSchema.parse(JSON.parse(artifact.contentJson));
 
   return (
@@ -93,10 +94,10 @@ export default async function MemoPage({
           <span className="font-mono">{artifact.id}</span>
           <span>·</span>
           <Link
-            href={`/companies/${artifact.ticker}`}
+            href={`/companies/${ticker}`}
             className="font-mono transition-colors hover:text-slate-300"
           >
-            {artifact.ticker}
+            {ticker}
           </Link>
           <span>·</span>
           <span>
@@ -133,7 +134,7 @@ export default async function MemoPage({
       <CitedList
         heading="Key changes"
         items={memo.keyChanges}
-        ticker={artifact.ticker}
+        ticker={ticker}
       />
 
       <section>
@@ -164,9 +165,9 @@ export default async function MemoPage({
       <CitedList
         heading="Catalysts"
         items={memo.catalysts}
-        ticker={artifact.ticker}
+        ticker={ticker}
       />
-      <CitedList heading="Risks" items={memo.risks} ticker={artifact.ticker} />
+      <CitedList heading="Risks" items={memo.risks} ticker={ticker} />
 
       <section>
         <h2 className="text-sm font-semibold uppercase tracking-wider text-slate-500">

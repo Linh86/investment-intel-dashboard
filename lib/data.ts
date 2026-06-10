@@ -1,9 +1,12 @@
-import { count, desc, eq, sum } from "drizzle-orm";
+import { and, count, desc, eq, sum } from "drizzle-orm";
 import { getDb } from "./db";
 import {
   approvals,
   artifacts as artifactsTable,
+  clientSegments,
   companies as companiesTable,
+  deliveryLog,
+  investorBriefs,
   rawItems,
   riskAssessments,
   riskEvidence,
@@ -15,12 +18,12 @@ import {
 import type { Company, RunRecord, Signal } from "./types";
 
 export type ArtifactStatus = "pending" | "approved" | "rejected";
-export type ArtifactType = "memo" | "crm-draft";
+export type ArtifactType = "memo" | "crm-draft" | "radar";
 
 export interface ArtifactView {
   id: string;
   type: ArtifactType;
-  ticker: string;
+  ticker: string | null;
   runId: string;
   status: ArtifactStatus;
   title: string;
@@ -327,4 +330,101 @@ export function latestSignalFor(
   ticker: string,
 ): Signal | undefined {
   return signalsForCompany(signals, ticker)[0];
+}
+
+export type BriefStatus = "draft" | "published" | "rejected";
+
+export interface BriefView {
+  id: string;
+  segmentId: string;
+  segmentName: string;
+  period: string;
+  status: BriefStatus;
+  version: number;
+  supersedesId: string | null;
+  sectionsJson: string;
+  disclosureVersions: string | null;
+  publishedAt: string | null;
+  publishedBy: string | null;
+  reviewedBy: string | null;
+  reviewNote: string | null;
+  createdAt: string;
+}
+
+const briefSelection = {
+  id: investorBriefs.id,
+  segmentId: investorBriefs.segmentId,
+  segmentName: clientSegments.name,
+  period: investorBriefs.period,
+  status: investorBriefs.status,
+  version: investorBriefs.version,
+  supersedesId: investorBriefs.supersedesId,
+  sectionsJson: investorBriefs.sectionsJson,
+  disclosureVersions: investorBriefs.disclosureVersions,
+  publishedAt: investorBriefs.publishedAt,
+  publishedBy: investorBriefs.publishedBy,
+  reviewedBy: investorBriefs.reviewedBy,
+  reviewNote: investorBriefs.reviewNote,
+  createdAt: investorBriefs.createdAt,
+};
+
+function toBriefView(
+  row: Omit<BriefView, "status"> & { status: string },
+): BriefView {
+  return { ...row, status: row.status as BriefStatus };
+}
+
+export function getSegments() {
+  return getDb()
+    .select()
+    .from(clientSegments)
+    .orderBy(clientSegments.id)
+    .all();
+}
+
+export function getBriefs(): BriefView[] {
+  return getDb()
+    .select(briefSelection)
+    .from(investorBriefs)
+    .innerJoin(clientSegments, eq(investorBriefs.segmentId, clientSegments.id))
+    .orderBy(desc(investorBriefs.createdAt), desc(investorBriefs.id))
+    .all()
+    .map(toBriefView);
+}
+
+export function getBrief(id: string): BriefView | null {
+  const row = getDb()
+    .select(briefSelection)
+    .from(investorBriefs)
+    .innerJoin(clientSegments, eq(investorBriefs.segmentId, clientSegments.id))
+    .where(eq(investorBriefs.id, id))
+    .get();
+  return row ? toBriefView(row) : null;
+}
+
+// The client surface reads ONLY through this: published briefs, nothing else.
+export function getLatestPublishedBrief(segmentId: string): BriefView | null {
+  const row = getDb()
+    .select(briefSelection)
+    .from(investorBriefs)
+    .innerJoin(clientSegments, eq(investorBriefs.segmentId, clientSegments.id))
+    .where(
+      and(
+        eq(investorBriefs.segmentId, segmentId),
+        eq(investorBriefs.status, "published"),
+      ),
+    )
+    .orderBy(desc(investorBriefs.publishedAt))
+    .limit(1)
+    .get();
+  return row ? toBriefView(row) : null;
+}
+
+export function getDeliveryLog(briefId: string) {
+  return getDb()
+    .select()
+    .from(deliveryLog)
+    .where(eq(deliveryLog.briefId, briefId))
+    .orderBy(desc(deliveryLog.deliveredAt))
+    .all();
 }

@@ -52,12 +52,17 @@ export function decideArtifact(input: {
   if (artifact.type === "memo" && input.decision === "approved") {
     const content = memoContentSchema.parse(JSON.parse(artifact.contentJson));
     let claimCount = db.select({ n: count() }).from(claims).get()?.n ?? 0;
-    for (const statement of [...content.keyChanges, ...content.risks]) {
+    const statements = [
+      ...content.keyChanges.map((s) => ({ ...s, kind: "key-change" as const })),
+      ...content.risks.map((s) => ({ ...s, kind: "risk" as const })),
+    ];
+    for (const statement of statements) {
       const claimId = `clm-${String(claimCount + 1).padStart(4, "0")}`;
       db.insert(claims)
         .values({
           id: claimId,
           claimText: statement.text,
+          kind: statement.kind,
           status: "approved",
           artifactRef: artifact.id,
           approvedBy: input.reviewer,
