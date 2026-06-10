@@ -21,6 +21,7 @@ export type SignalType =
 export type Urgency = "high" | "medium" | "low";
 export type Relevance = "high" | "medium" | "low";
 
+/** A stored signal joined with its raw item for display. */
 export interface Signal {
   id: string;
   ticker: string;
@@ -33,20 +34,15 @@ export interface Signal {
   publishedAt: string;
 }
 
-export type RunTrigger = "manual" | "cron" | "webhook";
 export type RunStatus = "completed" | "failed" | "running";
 
 export interface RunRecord {
   id: string;
-  trigger: RunTrigger;
-  kind: string;
+  trigger: string;
   status: RunStatus;
   startedAt: string;
-  finishedAt: string;
+  finishedAt: string | null;
   signalsIngested: number;
-  companiesTouched: number;
-  model: string;
-  promptVersion: string;
   costUsd: number;
   note: string;
 }

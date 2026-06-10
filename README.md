@@ -85,10 +85,11 @@ Requires Node.js 20 or newer.
 
 ```bash
 npm install
+npm run db:reset
 npm run dev
 ```
 
-Open http://localhost:3000. The current slice runs entirely from synthetic fixtures in `data/fixtures/` — no API keys, database, or network access required.
+Open http://localhost:3000 and click "Run morning brief" to triage the seeded raw items into signals (or `curl -X POST localhost:3000/api/runs/morning-brief`). Everything runs offline from synthetic fixtures and a local SQLite file — no API keys or network access required. `npm run db:reset` restores the pristine demo state at any time.
 
 ## Demo Script
 
@@ -105,14 +106,17 @@ Close with the business value: analyst time saved, more consistent research, str
 
 ## Repository Status
 
-M0 complete: Next.js + TypeScript dashboard shell with a seeded watchlist, fixture-backed signal feed, and placeholder run history. Everything renders from synthetic fixtures; no model calls or live data sources are wired up yet.
+M0 and M1 complete: Next.js + TypeScript dashboard backed by SQLite (Drizzle), with a seeded watchlist, a morning-brief pipeline that triages raw public-source items into Zod-validated signals, and a real run history recording per-step model, prompt version, and cost. Triage is deterministic and rule-based in DEMO_MODE (the default), so the demo needs no API keys; an LLM implementation slots in behind the same schema. Schema foundations for approved claims, fictional client segments, and investor briefs are already in place for M3/M4.
 
 Current layout:
 
-- `app/` — dashboard pages: watchlist, signal feed, run history
+- `app/` — dashboard pages (watchlist, signal feed, run history) and the run API route
 - `components/` — shared UI primitives
-- `lib/` — types and fixture-backed data access
-- `data/fixtures/` — synthetic watchlist, signals, and run records
+- `lib/db/` — Drizzle schema and SQLite client
+- `lib/pipeline/` — morning-brief pipeline and DEMO_MODE triage
+- `data/fixtures/` — synthetic watchlist, signals, runs, and raw items
+- `scripts/` — database reset/seed
+- `drizzle/` — generated SQL migrations
 
-Next milestone is M1 (fixture ingestion and triage agent). The full plan is in [docs/mvp-plan.md](docs/mvp-plan.md).
+Next milestone is M2 (risk scoring, score history, provenance panel). The full plan is in [docs/mvp-plan.md](docs/mvp-plan.md).
 

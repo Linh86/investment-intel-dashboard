@@ -27,7 +27,8 @@ export function formatUsd(amount: number): string {
   return `$${amount.toFixed(2)}`;
 }
 
-export function formatDuration(startIso: string, endIso: string): string {
+export function formatDuration(startIso: string, endIso: string | null): string {
+  if (!endIso) return "…";
   const seconds = (new Date(endIso).getTime() - new Date(startIso).getTime()) / 1000;
   return `${seconds.toFixed(0)}s`;
 }

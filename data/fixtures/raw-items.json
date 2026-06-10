@@ -1,0 +1,85 @@
+{
+  "note": "Synthetic demo fixture. Untriaged raw public-source items consumed by the morning-brief pipeline. Headlines, sources, and URLs are invented for the demo. Includes one planted export-control item used by the M2 risk-scoring demo.",
+  "items": [
+    {
+      "id": "raw-0101",
+      "title": "Draft export rules would expand licensing requirements for top-tier NVIDIA AI accelerators",
+      "snippet": "A circulated draft of updated export-control rules would broaden licensing requirements for the highest-performance AI accelerators, with comment period closing this month. Scope language names accelerator classes shipped to additional regions.",
+      "sourceName": "Synthetic Policy Wire",
+      "sourceUrl": "https://example.com/fixtures/raw-0101",
+      "publishedAt": "2026-06-10T06:40:00Z"
+    },
+    {
+      "id": "raw-0102",
+      "title": "NVIDIA partners with hyperscalers on next round of AI data-center buildouts",
+      "snippet": "New co-design agreements cover rack-scale systems for data centers scheduled to come online next year, extending committed accelerator volumes.",
+      "sourceName": "Synthetic Tech Wire",
+      "sourceUrl": "https://example.com/fixtures/raw-0102",
+      "publishedAt": "2026-06-10T05:55:00Z"
+    },
+    {
+      "id": "raw-0103",
+      "title": "TSMC capacity commentary points to tight leading-edge supply through next year",
+      "snippet": "Checks indicate leading-edge wafer capacity remains fully booked, with allocation decisions favoring AI accelerator customers.",
+      "sourceName": "Synthetic Supply Brief",
+      "sourceUrl": "https://example.com/fixtures/raw-0103",
+      "publishedAt": "2026-06-10T04:30:00Z"
+    },
+    {
+      "id": "raw-0104",
+      "title": "TSMC files monthly revenue disclosure showing record advanced-node mix",
+      "snippet": "The latest monthly filing shows advanced nodes at a record share of revenue, consistent with sustained AI-related demand.",
+      "sourceName": "Synthetic Filings Desk",
+      "sourceUrl": "https://example.com/fixtures/raw-0104",
+      "publishedAt": "2026-06-10T03:10:00Z"
+    },
+    {
+      "id": "raw-0105",
+      "title": "ASML receives follow-on order for next-generation lithography systems",
+      "snippet": "A lead-edge customer placed a follow-on order for additional next-generation lithography tools, supporting capacity plans for sub-2nm nodes.",
+      "sourceName": "Synthetic Tech Wire",
+      "sourceUrl": "https://example.com/fixtures/raw-0105",
+      "publishedAt": "2026-06-09T16:20:00Z"
+    },
+    {
+      "id": "raw-0106",
+      "title": "Analyst commentary: ASML order momentum supports multi-year visibility",
+      "snippet": "Sell-side commentary aggregates order trends and suggests tool demand visibility now extends across multiple years of fab construction.",
+      "sourceName": "Synthetic Research Desk",
+      "sourceUrl": "https://example.com/fixtures/raw-0106",
+      "publishedAt": "2026-06-09T14:45:00Z"
+    },
+    {
+      "id": "raw-0107",
+      "title": "Vertiv announces expanded liquid-cooling order backlog for AI data centers",
+      "snippet": "The company reported an expanded backlog for high-density cooling systems, citing AI rack-density requirements as the primary driver.",
+      "sourceName": "Synthetic Tech Wire",
+      "sourceUrl": "https://example.com/fixtures/raw-0107",
+      "publishedAt": "2026-06-09T13:05:00Z"
+    },
+    {
+      "id": "raw-0108",
+      "title": "Constellation Energy signs additional data-center power agreement",
+      "snippet": "A new long-term power purchase agreement adds contracted clean-energy load with a large data-center operator in the PJM region.",
+      "sourceName": "Synthetic Energy Desk",
+      "sourceUrl": "https://example.com/fixtures/raw-0108",
+      "publishedAt": "2026-06-09T11:30:00Z"
+    },
+    {
+      "id": "raw-0109",
+      "title": "Constellation regulatory filing details uprate timeline for nuclear fleet",
+      "snippet": "A regulatory submission outlines the timeline for capacity uprates across several units, with reviews expected to conclude next year.",
+      "sourceName": "Synthetic Energy Desk",
+      "sourceUrl": "https://example.com/fixtures/raw-0109",
+      "publishedAt": "2026-06-09T09:15:00Z"
+    },
+    {
+      "id": "raw-0110",
+      "title": "Data-center REIT commentary highlights regional power constraints",
+      "snippet": "Commentary from data-center real-estate operators flags grid interconnection queues as a constraint on new capacity in several regions.",
+      "sourceName": "Synthetic Research Desk",
+      "sourceUrl": "https://example.com/fixtures/raw-0110",
+      "publishedAt": "2026-06-09T08:00:00Z"
+    }
+  ]
+}

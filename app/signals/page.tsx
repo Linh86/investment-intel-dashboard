@@ -5,17 +5,19 @@ import {
   SignalTypePill,
   UrgencyIndicator,
 } from "@/components/ui";
-import { signals } from "@/lib/data";
+import { getSignals } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Signal Feed" };
+export const dynamic = "force-dynamic";
 
 export default function SignalFeedPage() {
+  const signals = getSignals();
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
         title="Signal Feed"
-        description={`${signals.length} synthetic public-source signals across the watchlist, newest first. The triage agent (M1) will classify live entries with relevance, urgency, and confidence.`}
+        description={`${signals.length} synthetic public-source signals across the watchlist, newest first. Classified by the deterministic DEMO_MODE triage — LLM triage over live sources arrives in a later milestone.`}
       />
 
       <ol className="flex flex-col gap-3">

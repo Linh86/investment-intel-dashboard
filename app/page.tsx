@@ -1,18 +1,19 @@
 import type { Metadata } from "next";
+import { RunBriefButton } from "@/components/run-brief-button";
 import { PageHeader, Pill, RiskScore, StatCard } from "@/components/ui";
 import type { PillTone } from "@/components/ui";
 import {
-  companies,
+  getCompanies,
+  getRuns,
+  getSignals,
   latestSignalFor,
-  runs,
-  signals,
   signalsForCompany,
-  watchlistAsOf,
 } from "@/lib/data";
 import { formatDate } from "@/lib/format";
 import type { Sector } from "@/lib/types";
 
 export const metadata: Metadata = { title: "Watchlist" };
+export const dynamic = "force-dynamic";
 
 const SECTOR_TONES: Record<Sector, PillTone> = {
   Semiconductors: "sky",
@@ -21,13 +22,20 @@ const SECTOR_TONES: Record<Sector, PillTone> = {
 };
 
 export default function WatchlistPage() {
+  const companies = getCompanies();
+  const signals = getSignals();
+  const runs = getRuns();
   const lastRun = runs[0];
+
   return (
     <div className="flex flex-col gap-8">
-      <PageHeader
-        title="Watchlist"
-        description={`Sector coverage across AI infrastructure, energy, and semiconductors. Fixture data as of ${formatDate(watchlistAsOf)}.`}
-      />
+      <div className="flex items-start justify-between gap-4">
+        <PageHeader
+          title="Watchlist"
+          description="Sector coverage across AI infrastructure, energy, and semiconductors. Synthetic demo data — the morning brief triages new raw items into signals."
+        />
+        <RunBriefButton />
+      </div>
 
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
@@ -47,8 +55,12 @@ export default function WatchlistPage() {
         />
         <StatCard
           label="Last run"
-          value={formatDate(lastRun.startedAt)}
-          hint={`${lastRun.id} · ${lastRun.trigger}`}
+          value={lastRun ? formatDate(lastRun.startedAt) : "—"}
+          hint={
+            lastRun
+              ? `${lastRun.id} · ${lastRun.trigger}`
+              : "seed with npm run db:reset"
+          }
         />
       </div>
 
@@ -65,7 +77,7 @@ export default function WatchlistPage() {
           </thead>
           <tbody className="divide-y divide-slate-800/70">
             {companies.map((company) => {
-              const latest = latestSignalFor(company.ticker);
+              const latest = latestSignalFor(signals, company.ticker);
               return (
                 <tr
                   key={company.ticker}
@@ -92,7 +104,7 @@ export default function WatchlistPage() {
                   </td>
                   <td className="px-4 py-3.5">
                     <span className="font-mono text-sm">
-                      {signalsForCompany(company.ticker).length}
+                      {signalsForCompany(signals, company.ticker).length}
                     </span>
                   </td>
                   <td className="px-4 py-3.5">

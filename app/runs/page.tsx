@@ -1,23 +1,25 @@
 import type { Metadata } from "next";
 import { PageHeader, Pill, RunStatusPill } from "@/components/ui";
-import { runs } from "@/lib/data";
+import { getRuns } from "@/lib/data";
 import { formatDateTime, formatDuration, formatUsd } from "@/lib/format";
 
 export const metadata: Metadata = { title: "Run History" };
+export const dynamic = "force-dynamic";
 
 const AUDIT_FIELDS = [
-  "Model and prompt version used for every agent step",
-  "Source IDs and URLs behind every claim",
-  "Token usage and per-run cost",
-  "Approval decision, reviewer, and timestamp for outbound artifacts",
+  "Model and prompt version per pipeline step (recorded since M1)",
+  "Source IDs and URLs behind every claim (M3)",
+  "Token usage and per-run cost in live LLM mode (M2+)",
+  "Approval decision, reviewer, and timestamp for outbound artifacts (M3)",
 ];
 
 export default function RunHistoryPage() {
+  const runs = getRuns();
   return (
     <div className="flex flex-col gap-8">
       <PageHeader
         title="Run History"
-        description="Placeholder audit records from fixture mode. The real pipeline lands in M1; this page becomes the audit trail for every scheduled, manual, or webhook-triggered run."
+        description="Every pipeline run, stored with its steps, counts, and cost. Trigger one from the watchlist page or POST /api/runs/morning-brief — DEMO_MODE triage runs offline with no API keys."
       />
 
       <section className="overflow-hidden rounded-xl border border-slate-800 bg-slate-900/40">
@@ -75,10 +77,10 @@ export default function RunHistoryPage() {
 
       <section className="rounded-xl border border-dashed border-slate-700 bg-slate-900/20 p-5">
         <h2 className="text-sm font-semibold text-slate-200">
-          What the audit trail will record
+          What the audit trail records
         </h2>
         <p className="mt-1 text-sm text-slate-400">
-          From M1 onward, every run appends an auditable record per artifact:
+          Each run appends auditable records as the pipeline grows:
         </p>
         <ul className="mt-3 grid gap-x-6 gap-y-2 text-sm text-slate-400 sm:grid-cols-2">
           {AUDIT_FIELDS.map((field) => (
