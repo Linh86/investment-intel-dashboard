@@ -1,0 +1,47 @@
+{
+  "note": "Synthetic demo fixture. Placeholder run records until the real pipeline lands in M1. Real runs will record model, prompt version, token cost, source IDs, and approval status.",
+  "runs": [
+    {
+      "id": "run-0003",
+      "trigger": "cron",
+      "kind": "fixture-refresh",
+      "status": "completed",
+      "startedAt": "2026-06-09T07:00:03Z",
+      "finishedAt": "2026-06-09T07:00:05Z",
+      "signalsIngested": 3,
+      "companiesTouched": 3,
+      "model": "none (fixture mode)",
+      "promptVersion": "n/a",
+      "costUsd": 0,
+      "note": "Scheduled fixture refresh. Loaded 3 new synthetic signals into the feed."
+    },
+    {
+      "id": "run-0002",
+      "trigger": "manual",
+      "kind": "fixture-seed",
+      "status": "completed",
+      "startedAt": "2026-06-08T16:24:10Z",
+      "finishedAt": "2026-06-08T16:24:12Z",
+      "signalsIngested": 9,
+      "companiesTouched": 5,
+      "model": "none (fixture mode)",
+      "promptVersion": "n/a",
+      "costUsd": 0,
+      "note": "Seeded the signal feed with synthetic fixtures across the watchlist."
+    },
+    {
+      "id": "run-0001",
+      "trigger": "manual",
+      "kind": "bootstrap",
+      "status": "completed",
+      "startedAt": "2026-06-01T09:30:00Z",
+      "finishedAt": "2026-06-01T09:30:01Z",
+      "signalsIngested": 0,
+      "companiesTouched": 5,
+      "model": "none (fixture mode)",
+      "promptVersion": "n/a",
+      "costUsd": 0,
+      "note": "Initialized watchlist with five seed companies and baseline risk placeholders."
+    }
+  ]
+}

@@ -1,0 +1,56 @@
+{
+  "note": "Synthetic demo fixture. Companies are public; baseline risk scores are seeded placeholders until rubric scoring lands in M2.",
+  "asOf": "2026-06-09",
+  "companies": [
+    {
+      "ticker": "NVDA",
+      "name": "NVIDIA Corporation",
+      "sector": "Semiconductors",
+      "subSector": "AI accelerators & systems",
+      "country": "United States",
+      "watchReason": "Core AI compute supplier. Watch demand durability, supply allocation, and export policy.",
+      "baselineRisk": 42,
+      "addedAt": "2026-06-01"
+    },
+    {
+      "ticker": "TSM",
+      "name": "Taiwan Semiconductor Manufacturing Company",
+      "sector": "Semiconductors",
+      "subSector": "Leading-edge foundry",
+      "country": "Taiwan",
+      "watchReason": "Sole-source manufacturer for leading-edge AI silicon. Watch geopolitical risk and capacity expansion.",
+      "baselineRisk": 62,
+      "addedAt": "2026-06-01"
+    },
+    {
+      "ticker": "ASML",
+      "name": "ASML Holding",
+      "sector": "Semiconductors",
+      "subSector": "Lithography equipment",
+      "country": "Netherlands",
+      "watchReason": "Monopoly supplier of EUV lithography. Watch export controls and fab capex cycles.",
+      "baselineRisk": 48,
+      "addedAt": "2026-06-01"
+    },
+    {
+      "ticker": "VRT",
+      "name": "Vertiv Holdings",
+      "sector": "AI Infrastructure",
+      "subSector": "Power & cooling for data centers",
+      "country": "United States",
+      "watchReason": "Critical power and thermal management for AI data centers. Watch order momentum and competition.",
+      "baselineRisk": 45,
+      "addedAt": "2026-06-01"
+    },
+    {
+      "ticker": "CEG",
+      "name": "Constellation Energy",
+      "sector": "Energy",
+      "subSector": "Nuclear & clean power",
+      "country": "United States",
+      "watchReason": "Largest US nuclear fleet with data-center power deals. Watch regulatory milestones and contracted load growth.",
+      "baselineRisk": 38,
+      "addedAt": "2026-06-01"
+    }
+  ]
+}

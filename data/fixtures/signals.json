@@ -1,0 +1,138 @@
+{
+  "note": "Synthetic demo fixture. Headlines, summaries, sources, and URLs are invented for the demo and do not reference real articles. The triage agent (M1) will populate this feed from public-source metadata.",
+  "generatedAt": "2026-06-09T07:00:05Z",
+  "signals": [
+    {
+      "id": "sig-001",
+      "ticker": "NVDA",
+      "headline": "Updated export licensing guidance for advanced AI accelerators enters review",
+      "summary": "A draft update to export licensing rules for high-end AI accelerators is circulating for comment. Scope language could affect next-generation data-center parts shipped to restricted regions.",
+      "type": "regulatory",
+      "urgency": "high",
+      "relevance": "high",
+      "source": { "name": "Synthetic Policy Wire", "url": "https://example.com/fixtures/sig-001" },
+      "publishedAt": "2026-06-08T14:30:00Z"
+    },
+    {
+      "id": "sig-002",
+      "ticker": "NVDA",
+      "headline": "NVIDIA outlines next-generation accelerator roadmap at developer event",
+      "summary": "Company leadership presented an updated accelerator roadmap, reiterating a one-year product cadence and broader rack-scale system offerings.",
+      "type": "news",
+      "urgency": "medium",
+      "relevance": "high",
+      "source": { "name": "Synthetic Tech Wire", "url": "https://example.com/fixtures/sig-002" },
+      "publishedAt": "2026-06-05T16:00:00Z"
+    },
+    {
+      "id": "sig-003",
+      "ticker": "NVDA",
+      "headline": "Hyperscaler capital-expenditure commentary points to sustained accelerator demand",
+      "summary": "Aggregated commentary from large cloud providers continues to signal multi-quarter AI infrastructure build-outs, supporting accelerator order visibility.",
+      "type": "analyst",
+      "urgency": "low",
+      "relevance": "medium",
+      "source": { "name": "Synthetic Research Desk", "url": "https://example.com/fixtures/sig-003" },
+      "publishedAt": "2026-06-03T11:00:00Z"
+    },
+    {
+      "id": "sig-004",
+      "ticker": "TSM",
+      "headline": "TSMC monthly revenue snapshot shows continued advanced-node strength",
+      "summary": "The latest monthly revenue disclosure indicates ongoing strength in leading-edge nodes, consistent with AI-related demand commentary.",
+      "type": "filing",
+      "urgency": "medium",
+      "relevance": "high",
+      "source": { "name": "Synthetic Filings Desk", "url": "https://example.com/fixtures/sig-004" },
+      "publishedAt": "2026-06-09T08:00:00Z"
+    },
+    {
+      "id": "sig-005",
+      "ticker": "TSM",
+      "headline": "Advanced packaging capacity expansion reported ahead of schedule",
+      "summary": "Supply-chain checks suggest CoWoS-class packaging capacity additions are tracking ahead of prior guidance, easing a key AI accelerator bottleneck.",
+      "type": "supply-chain",
+      "urgency": "medium",
+      "relevance": "high",
+      "source": { "name": "Synthetic Supply Brief", "url": "https://example.com/fixtures/sig-005" },
+      "publishedAt": "2026-06-06T09:30:00Z"
+    },
+    {
+      "id": "sig-006",
+      "ticker": "TSM",
+      "headline": "Regional policy commentary lifts near-term geopolitical headline risk",
+      "summary": "New policy statements increased headline risk around cross-strait relations. No direct operational impact reported; monitoring for follow-on measures.",
+      "type": "regulatory",
+      "urgency": "high",
+      "relevance": "high",
+      "source": { "name": "Synthetic Policy Wire", "url": "https://example.com/fixtures/sig-006" },
+      "publishedAt": "2026-06-07T22:15:00Z"
+    },
+    {
+      "id": "sig-007",
+      "ticker": "ASML",
+      "headline": "ASML ships next-generation lithography system to lead-customer fab",
+      "summary": "First shipment of the newest lithography platform to a lead customer marks a milestone for sub-2nm process development timelines.",
+      "type": "news",
+      "urgency": "medium",
+      "relevance": "high",
+      "source": { "name": "Synthetic Tech Wire", "url": "https://example.com/fixtures/sig-007" },
+      "publishedAt": "2026-06-04T10:00:00Z"
+    },
+    {
+      "id": "sig-008",
+      "ticker": "ASML",
+      "headline": "Export-control scope discussions continue for lithography tooling",
+      "summary": "Officials continue to discuss the scope of export controls on advanced lithography equipment and related servicing obligations.",
+      "type": "regulatory",
+      "urgency": "high",
+      "relevance": "medium",
+      "source": { "name": "Synthetic Policy Wire", "url": "https://example.com/fixtures/sig-008" },
+      "publishedAt": "2026-06-06T13:45:00Z"
+    },
+    {
+      "id": "sig-009",
+      "ticker": "VRT",
+      "headline": "Vertiv expands liquid-cooling manufacturing capacity for AI data centers",
+      "summary": "Announced expansion of liquid-cooling production lines targets rising rack-density requirements in AI build-outs.",
+      "type": "news",
+      "urgency": "medium",
+      "relevance": "high",
+      "source": { "name": "Synthetic Tech Wire", "url": "https://example.com/fixtures/sig-009" },
+      "publishedAt": "2026-06-05T12:00:00Z"
+    },
+    {
+      "id": "sig-010",
+      "ticker": "VRT",
+      "headline": "Channel commentary suggests stable order backlog into next quarter",
+      "summary": "Distributor and channel checks indicate a stable thermal-management backlog, with no sign of order pull-forward unwinding.",
+      "type": "analyst",
+      "urgency": "low",
+      "relevance": "low",
+      "source": { "name": "Synthetic Research Desk", "url": "https://example.com/fixtures/sig-010" },
+      "publishedAt": "2026-06-02T15:30:00Z"
+    },
+    {
+      "id": "sig-011",
+      "ticker": "CEG",
+      "headline": "Constellation signs long-term power agreement with data-center operator",
+      "summary": "A new multi-year power purchase agreement with a large data-center operator adds contracted clean-energy load.",
+      "type": "news",
+      "urgency": "medium",
+      "relevance": "high",
+      "source": { "name": "Synthetic Energy Desk", "url": "https://example.com/fixtures/sig-011" },
+      "publishedAt": "2026-06-07T17:20:00Z"
+    },
+    {
+      "id": "sig-012",
+      "ticker": "CEG",
+      "headline": "Nuclear uprate program clears key regulatory milestone",
+      "summary": "A capacity uprate application advanced past a key regulatory review step, supporting incremental zero-carbon generation.",
+      "type": "regulatory",
+      "urgency": "medium",
+      "relevance": "medium",
+      "source": { "name": "Synthetic Energy Desk", "url": "https://example.com/fixtures/sig-012" },
+      "publishedAt": "2026-06-03T19:00:00Z"
+    }
+  ]
+}

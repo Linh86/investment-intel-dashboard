@@ -24,6 +24,16 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
+# next.js / typescript
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+*.pem
+
+# local tooling
+.claude/
+.npm/
+
 # OS
 .DS_Store
 

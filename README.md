@@ -79,6 +79,17 @@ The first vertical slice:
 - Fixture-backed demo mode so the interview demo does not depend on live network access.
 - Webhook endpoint for n8n, Make, Zapier, GitHub Actions, or cron.
 
+## Run Locally
+
+Requires Node.js 20 or newer.
+
+```bash
+npm install
+npm run dev
+```
+
+Open http://localhost:3000. The current slice runs entirely from synthetic fixtures in `data/fixtures/` — no API keys, database, or network access required.
+
 ## Demo Script
 
 1. Open the dashboard and show the sector watchlist.
@@ -94,5 +105,14 @@ Close with the business value: analyst time saved, more consistent research, str
 
 ## Repository Status
 
-Initial planning and clean-room scaffold. Implementation follows the milestone plan in [docs/mvp-plan.md](docs/mvp-plan.md).
+M0 complete: Next.js + TypeScript dashboard shell with a seeded watchlist, fixture-backed signal feed, and placeholder run history. Everything renders from synthetic fixtures; no model calls or live data sources are wired up yet.
+
+Current layout:
+
+- `app/` — dashboard pages: watchlist, signal feed, run history
+- `components/` — shared UI primitives
+- `lib/` — types and fixture-backed data access
+- `data/fixtures/` — synthetic watchlist, signals, and run records
+
+Next milestone is M1 (fixture ingestion and triage agent). The full plan is in [docs/mvp-plan.md](docs/mvp-plan.md).
 
