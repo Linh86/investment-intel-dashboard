@@ -1,6 +1,22 @@
-import { count, eq, isNull } from "drizzle-orm";
+import { count, desc, eq, isNull } from "drizzle-orm";
 import { getDb } from "../db";
-import { companies, rawItems, runs, runSteps, signals } from "../db/schema";
+import {
+  companies,
+  rawItems,
+  riskAssessments,
+  riskEvidence,
+  riskSubscores,
+  runs,
+  runSteps,
+  signals,
+} from "../db/schema";
+import { RUBRIC, type Dimension } from "../scoring/rubric";
+import {
+  assessCompany,
+  RISK_MODEL,
+  RISK_PROMPT_VERSION,
+  type ScoringSignal,
+} from "../scoring/score";
 import {
   classifyRawItem,
   TRIAGE_MODEL,
@@ -15,6 +31,7 @@ export interface MorningBriefResult {
   itemsPending: number;
   signalsCreated: number;
   skipped: number;
+  assessmentsCreated: number;
   note: string;
 }
 
@@ -86,6 +103,8 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
     let signalCount = db.select({ n: count() }).from(signals).get()?.n ?? 0;
     let created = 0;
     let skipped = 0;
+    const createdSignals: ScoringSignal[] = [];
+    const tickersTouched = new Map<string, ScoringSignal[]>();
 
     for (const item of pending) {
       const classification = classifyRawItem(item, tickers);
@@ -97,9 +116,10 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
         skipped += 1;
         continue;
       }
+      const signalId = nextId("sig", signalCount);
       db.insert(signals)
         .values({
-          id: nextId("sig", signalCount),
+          id: signalId,
           rawItemId: item.id,
           runId,
           ...classification,
@@ -108,6 +128,19 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
         .run();
       signalCount += 1;
       created += 1;
+      const scoringSignal: ScoringSignal = {
+        id: signalId,
+        type: classification.type,
+        urgency: classification.urgency,
+        relevance: classification.relevance,
+        confidence: classification.confidence,
+        headline: item.title,
+        snippet: item.snippet,
+      };
+      createdSignals.push(scoringSignal);
+      const list = tickersTouched.get(classification.ticker) ?? [];
+      list.push(scoringSignal);
+      tickersTouched.set(classification.ticker, list);
     }
 
     db.insert(runSteps)
@@ -130,11 +163,118 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
       })
       .run();
 
+    // Step 3: rescore companies that received new signals.
+    const scoreStarted = nowIso();
+    let assessmentCount =
+      db.select({ n: count() }).from(riskAssessments).get()?.n ?? 0;
+    let assessmentsCreated = 0;
+
+    for (const [ticker, tickerSignals] of tickersTouched) {
+      const company = db
+        .select()
+        .from(companies)
+        .where(eq(companies.ticker, ticker))
+        .get();
+      if (!company) continue;
+
+      const previous = db
+        .select()
+        .from(riskAssessments)
+        .where(eq(riskAssessments.ticker, ticker))
+        .orderBy(desc(riskAssessments.createdAt))
+        .limit(1)
+        .get();
+      const previousSubscores: Partial<Record<Dimension, number>> = {};
+      if (previous) {
+        for (const row of db
+          .select()
+          .from(riskSubscores)
+          .where(eq(riskSubscores.assessmentId, previous.id))
+          .all()) {
+          previousSubscores[row.dimension as Dimension] = row.score;
+        }
+      }
+
+      const result = assessCompany({
+        baseline: company.baselineRisk,
+        previousComposite: previous?.composite ?? null,
+        previousSubscores: previous ? previousSubscores : null,
+        signals: tickerSignals,
+      });
+
+      const assessmentId = nextId("ra", assessmentCount);
+      db.insert(riskAssessments)
+        .values({
+          id: assessmentId,
+          ticker,
+          runId,
+          rubricVersion: RUBRIC.version,
+          model: RISK_MODEL,
+          promptVersion: RISK_PROMPT_VERSION,
+          composite: result.composite,
+          previous: result.previous,
+          summary: result.summary,
+          createdAt: nowIso(),
+        })
+        .run();
+      assessmentCount += 1;
+      assessmentsCreated += 1;
+
+      for (const subscore of result.subscores) {
+        const inserted = db
+          .insert(riskSubscores)
+          .values({
+            assessmentId,
+            dimension: subscore.dimension,
+            score: subscore.score,
+            baseline: subscore.baseline,
+            confidence: subscore.confidence,
+            rationale: subscore.rationale,
+          })
+          .run();
+        if (subscore.evidence.length > 0) {
+          db.insert(riskEvidence)
+            .values(
+              subscore.evidence.map((item) => ({
+                subscoreId: Number(inserted.lastInsertRowid),
+                signalId: item.signalId,
+                quote: item.quote,
+                delta: item.delta,
+              })),
+            )
+            .run();
+        }
+      }
+    }
+
+    db.insert(runSteps)
+      .values({
+        id: `${runId}:score`,
+        runId,
+        name: "score",
+        status: "completed",
+        startedAt: scoreStarted,
+        finishedAt: nowIso(),
+        model: RISK_MODEL,
+        promptVersion: RISK_PROMPT_VERSION,
+        inputCount: createdSignals.length,
+        outputCount: assessmentsCreated,
+        costUsd: 0,
+        detail:
+          assessmentsCreated > 0
+            ? `Rescored ${assessmentsCreated} companies with rubric ${RUBRIC.version}.`
+            : "No companies to rescore.",
+      })
+      .run();
+
     const note =
       pending.length === 0
         ? "No new raw items to triage."
         : `Triaged ${pending.length} raw items into ${created} signals` +
-          (skipped > 0 ? ` (${skipped} skipped: no watchlist match).` : ".");
+          (skipped > 0 ? ` (${skipped} skipped: no watchlist match)` : "") +
+          (assessmentsCreated > 0
+            ? `. Updated ${assessmentsCreated} risk scores.`
+            : ".");
 
     db.update(runs)
       .set({ status: "completed", finishedAt: nowIso(), note })
@@ -147,6 +287,7 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
       itemsPending: pending.length,
       signalsCreated: created,
       skipped,
+      assessmentsCreated,
       note,
     };
   } catch (error) {
@@ -161,6 +302,7 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
       itemsPending: 0,
       signalsCreated: 0,
       skipped: 0,
+      assessmentsCreated: 0,
       note: message,
     };
   }

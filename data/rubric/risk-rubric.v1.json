@@ -1,0 +1,11 @@
+{
+  "version": "risk-rubric.v1",
+  "description": "Composite risk is the weighted sum of five dimension subscores (0-100). Dimensions initialize at the company baseline; the scorer applies severity-weighted deltas from new signals. Weights must sum to 1.",
+  "weights": {
+    "market": 0.2,
+    "execution": 0.15,
+    "regulatory": 0.3,
+    "supply-chain": 0.2,
+    "financial": 0.15
+  }
+}

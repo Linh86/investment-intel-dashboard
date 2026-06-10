@@ -79,6 +79,49 @@ export const signals = sqliteTable("signals", {
   createdAt: text("created_at").notNull(),
 });
 
+// One risk assessment per company per scoring run; doubles as score history.
+export const riskAssessments = sqliteTable("risk_assessments", {
+  id: text("id").primaryKey(),
+  ticker: text("ticker")
+    .notNull()
+    .references(() => companies.ticker),
+  runId: text("run_id")
+    .notNull()
+    .references(() => runs.id),
+  rubricVersion: text("rubric_version").notNull(),
+  model: text("model").notNull(),
+  promptVersion: text("prompt_version").notNull(),
+  composite: integer("composite").notNull(),
+  previous: integer("previous"),
+  summary: text("summary").notNull(),
+  createdAt: text("created_at").notNull(),
+});
+
+export const riskSubscores = sqliteTable("risk_subscores", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  assessmentId: text("assessment_id")
+    .notNull()
+    .references(() => riskAssessments.id),
+  dimension: text("dimension").notNull(), // market | execution | regulatory | supply-chain | financial
+  score: integer("score").notNull(),
+  baseline: integer("baseline").notNull(),
+  confidence: real("confidence").notNull(),
+  rationale: text("rationale").notNull(),
+});
+
+// Provenance: which signals moved a subscore, with the quoted source headline.
+export const riskEvidence = sqliteTable("risk_evidence", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  subscoreId: integer("subscore_id")
+    .notNull()
+    .references(() => riskSubscores.id),
+  signalId: text("signal_id")
+    .notNull()
+    .references(() => signals.id),
+  quote: text("quote").notNull(),
+  delta: integer("delta").notNull(),
+});
+
 // Approved statements extracted from reviewed artifacts (M3). Only rows with
 // status = approved may ever reach an investor-facing surface (M4).
 export const claims = sqliteTable("claims", {

@@ -106,17 +106,19 @@ Close with the business value: analyst time saved, more consistent research, str
 
 ## Repository Status
 
-M0 and M1 complete: Next.js + TypeScript dashboard backed by SQLite (Drizzle), with a seeded watchlist, a morning-brief pipeline that triages raw public-source items into Zod-validated signals, and a real run history recording per-step model, prompt version, and cost. Triage is deterministic and rule-based in DEMO_MODE (the default), so the demo needs no API keys; an LLM implementation slots in behind the same schema. Schema foundations for approved claims, fictional client segments, and investor briefs are already in place for M3/M4.
+M0–M2 complete: Next.js + TypeScript dashboard backed by SQLite (Drizzle). The morning-brief pipeline triages raw public-source items into Zod-validated signals, then rescores affected companies against a versioned rubric (`risk-rubric.v1`): five evidence-backed subscores combined into a composite 0–100 in plain code, never by a model. Every score links to a provenance page — evidence quotes, source links, rubric/model/prompt versions, and score history. Both agents are deterministic and rule-based in DEMO_MODE (the default), so the demo needs no API keys; LLM implementations slot in behind the same schemas. Claim, client-segment, and investor-brief tables are already in place for M3/M4.
 
 Current layout:
 
-- `app/` — dashboard pages (watchlist, signal feed, run history) and the run API route
+- `app/` — dashboard pages (watchlist, signal feed, run history, company risk provenance) and the run API route
 - `components/` — shared UI primitives
 - `lib/db/` — Drizzle schema and SQLite client
 - `lib/pipeline/` — morning-brief pipeline and DEMO_MODE triage
+- `lib/scoring/` — risk rubric loader and deterministic scorer
 - `data/fixtures/` — synthetic watchlist, signals, runs, and raw items
+- `data/rubric/` — versioned risk-rubric weights
 - `scripts/` — database reset/seed
 - `drizzle/` — generated SQL migrations
 
-Next milestone is M2 (risk scoring, score history, provenance panel). The full plan is in [docs/mvp-plan.md](docs/mvp-plan.md).
+Next milestone is M3 (memo writer, review queue, CRM outbox, claim extraction). The full plan is in [docs/mvp-plan.md](docs/mvp-plan.md).
 

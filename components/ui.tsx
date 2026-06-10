@@ -90,7 +90,13 @@ export function riskBand(score: number): {
   return { label: "Low", tone: "emerald", bar: "bg-emerald-400" };
 }
 
-export function RiskScore({ score }: { score: number }) {
+export function RiskScore({
+  score,
+  delta,
+}: {
+  score: number;
+  delta?: number | null;
+}) {
   const band = riskBand(score);
   return (
     <div className="flex flex-col gap-1.5">
@@ -99,6 +105,13 @@ export function RiskScore({ score }: { score: number }) {
           {score}
         </span>
         <Pill tone={band.tone}>{band.label}</Pill>
+        {delta != null && delta !== 0 ? (
+          <span
+            className={`font-mono text-xs font-semibold ${delta > 0 ? "text-red-400" : "text-emerald-400"}`}
+          >
+            {delta > 0 ? "▲" : "▼"} {Math.abs(delta)}
+          </span>
+        ) : null}
       </div>
       <div className="h-1 w-20 overflow-hidden rounded-full bg-slate-800">
         <div className={`h-full ${band.bar}`} style={{ width: `${score}%` }} />

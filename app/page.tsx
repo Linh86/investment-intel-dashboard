@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { RunBriefButton } from "@/components/run-brief-button";
 import { PageHeader, Pill, RiskScore, StatCard } from "@/components/ui";
 import type { PillTone } from "@/components/ui";
 import {
-  getCompanies,
   getRuns,
   getSignals,
+  getWatchlist,
   latestSignalFor,
   signalsForCompany,
 } from "@/lib/data";
@@ -22,7 +23,7 @@ const SECTOR_TONES: Record<Sector, PillTone> = {
 };
 
 export default function WatchlistPage() {
-  const companies = getCompanies();
+  const watchlist = getWatchlist();
   const signals = getSignals();
   const runs = getRuns();
   const lastRun = runs[0];
@@ -40,7 +41,7 @@ export default function WatchlistPage() {
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
         <StatCard
           label="Companies tracked"
-          value={companies.length}
+          value={watchlist.length}
           hint="3 sectors"
         />
         <StatCard
@@ -70,13 +71,13 @@ export default function WatchlistPage() {
             <tr>
               <th className="px-4 py-3 font-medium">Company</th>
               <th className="px-4 py-3 font-medium">Sector</th>
-              <th className="px-4 py-3 font-medium">Baseline risk</th>
+              <th className="px-4 py-3 font-medium">Risk</th>
               <th className="px-4 py-3 font-medium">Signals</th>
               <th className="px-4 py-3 font-medium">Latest signal</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-800/70">
-            {companies.map((company) => {
+            {watchlist.map(({ company, risk }) => {
               const latest = latestSignalFor(signals, company.ticker);
               return (
                 <tr
@@ -100,7 +101,13 @@ export default function WatchlistPage() {
                     </Pill>
                   </td>
                   <td className="px-4 py-3.5">
-                    <RiskScore score={company.baselineRisk} />
+                    <Link
+                      href={`/companies/${company.ticker}`}
+                      className="inline-block transition-opacity hover:opacity-75"
+                      title="View risk provenance"
+                    >
+                      <RiskScore score={risk.current} delta={risk.delta} />
+                    </Link>
                   </td>
                   <td className="px-4 py-3.5">
                     <span className="font-mono text-sm">
@@ -130,8 +137,10 @@ export default function WatchlistPage() {
       </section>
 
       <p className="text-xs text-slate-500">
-        Baseline risk is a seeded rubric placeholder. Live rubric scoring with
-        per-claim provenance lands in M2.
+        Scores combine five rubric-weighted subscores (risk-rubric.v1) from the
+        deterministic demo scorer; unassessed companies show their seeded
+        baseline. Click a score for full provenance — evidence, sources, model,
+        and prompt version.
       </p>
     </div>
   );
