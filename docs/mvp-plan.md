@@ -79,7 +79,7 @@ SQLite via Drizzle. Provenance uses join tables, not array columns.
 | M2 ✅ (2026-06-10) | Risk scorer, score history, planted export-control event, provenance panel | Planted event moves a score; rationale cites it; every number traces to sources |
 | M3 ✅ (2026-06-10) | Memo writer, review queue, CRM outbox, claim extraction on approval | Approval creates CRM-shaped JSON and approved-claim rows; rejection creates neither |
 | M4 ✅ (2026-06-10) | Weekly AI radar; investor brief assembled from approved claims only, with compliance checks, client page, and delivery log | Unapproved claims provably cannot render on the client surface |
-| M5 | README polish, demo reset command, GitHub Actions cron + n8n export, eval script, short recording | Fresh offline clone reaches the full demo in three commands |
+| M5 ✅ (2026-06-10) | README as application centerpiece with screenshots, GitHub Actions CI + scheduled morning brief, n8n export, triage eval harness (recording: placeholder link in README) | Fresh offline clone reaches the full demo in three commands; CI re-proves the pipeline on every push |
 
 ## Approved Claims And Client Transparency
 

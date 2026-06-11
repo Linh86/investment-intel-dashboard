@@ -1,0 +1,123 @@
+{
+  "name": "Investment Intel — Weekly AI Radar",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "weeks",
+              "triggerAtDay": [1],
+              "triggerAtHour": 7,
+              "triggerAtMinute": 0
+            }
+          ]
+        }
+      },
+      "id": "676ebbaf-8cb4-4a56-9fc7-f6de45c37635",
+      "name": "Every Monday 07:00",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.2,
+      "position": [0, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "http://localhost:3000/api/runs/weekly-radar",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "{\n  \"trigger\": \"webhook\"\n}",
+        "options": {}
+      },
+      "id": "584512af-1b95-42d3-84c1-6e22bd68f006",
+      "name": "Run weekly radar",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [220, 0]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 2
+          },
+          "conditions": [
+            {
+              "id": "51519c31-a89a-44b3-a296-8bd0e79697b7",
+              "leftValue": "={{ $json.drafted }}",
+              "rightValue": 1,
+              "operator": {
+                "type": "number",
+                "operation": "equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "id": "f6dfd759-0a39-49d6-8eb6-3dde6f98257f",
+      "name": "Radar drafted?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.2,
+      "position": [440, 0]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://hooks.slack.com/services/REPLACE/ME",
+        "sendBody": true,
+        "contentType": "json",
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"text\": \"Investment Intel Dashboard: an AI radar draft is awaiting human review in /review. Run {{ $json.runId }}: {{ $json.note }}\"\n}",
+        "options": {}
+      },
+      "id": "a651d3d0-34c4-4c2b-9265-9fedbd3dfa5b",
+      "name": "Notify Slack reviewers",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [660, 0]
+    }
+  ],
+  "connections": {
+    "Every Monday 07:00": {
+      "main": [
+        [
+          {
+            "node": "Run weekly radar",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Run weekly radar": {
+      "main": [
+        [
+          {
+            "node": "Radar drafted?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Radar drafted?": {
+      "main": [
+        [
+          {
+            "node": "Notify Slack reviewers",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        []
+      ]
+    }
+  },
+  "settings": {}
+}

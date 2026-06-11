@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "db:generate": "drizzle-kit generate",
-    "db:reset": "tsx scripts/db-reset.ts"
+    "db:reset": "tsx scripts/db-reset.ts",
+    "eval": "tsx scripts/eval-triage.ts"
   },
   "dependencies": {
     "better-sqlite3": "^12.10.0",

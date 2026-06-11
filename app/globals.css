@@ -3,3 +3,18 @@
 :root {
   color-scheme: dark;
 }
+
+/* Browser print of the client brief yields a clean light one-pager. */
+@media print {
+  * {
+    background: transparent !important;
+    color: #0f172a !important;
+    border-color: #cbd5e1 !important;
+  }
+  body {
+    background: #ffffff !important;
+  }
+  a {
+    text-decoration: none;
+  }
+}

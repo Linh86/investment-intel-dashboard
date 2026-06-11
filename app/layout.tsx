@@ -27,7 +27,7 @@ export default function RootLayout({
     <html lang="en" className="h-full antialiased">
       <body className="min-h-full bg-slate-950 font-sans text-slate-100">
         <div className="flex min-h-screen">
-          <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-slate-800 bg-slate-900/40 px-4 py-6">
+          <aside className="sticky top-0 flex h-screen w-64 shrink-0 flex-col border-r border-slate-800 bg-slate-900/40 px-4 py-6 print:hidden">
             <Link href="/" className="px-2">
               <div className="text-sm font-semibold tracking-wide">
                 Investment Intel
@@ -67,7 +67,7 @@ export default function RootLayout({
             </div>
           </aside>
           <div className="flex min-w-0 flex-1 flex-col">
-            <header className="flex items-center justify-between gap-4 border-b border-slate-800 px-8 py-3">
+            <header className="flex items-center justify-between gap-4 border-b border-slate-800 px-8 py-3 print:hidden">
               <div className="text-sm text-slate-400">
                 AI infrastructure · Energy · Semiconductors
               </div>
@@ -76,7 +76,7 @@ export default function RootLayout({
             <main className="flex-1 px-8 py-8">
               <div className="mx-auto w-full max-w-5xl">{children}</div>
             </main>
-            <footer className="border-t border-slate-800 px-8 py-3 text-xs text-slate-600">
+            <footer className="border-t border-slate-800 px-8 py-3 text-xs text-slate-600 print:hidden">
               All signals, runs, and scores are synthetic fixtures. No live data
               sources or model calls are connected yet.
             </footer>

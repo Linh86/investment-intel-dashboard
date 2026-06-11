@@ -1,0 +1,95 @@
+{
+  "note": "Synthetic eval fixture. 15 invented headlines labeled by human judgment of what a correct triage SHOULD say — labels are not derived from the current rule implementation, so misses indicate real gaps in the deterministic classifier. expected.ticker null means no watchlist company applies (type and urgency are null too). The same cases can score an LLM-backed triage behind the same schema.",
+  "cases": [
+    {
+      "id": "eval-01",
+      "title": "US finalizes export restrictions on NVIDIA's highest-performance AI accelerators",
+      "snippet": "The final rule takes effect within 30 days and requires a license for shipments of the most capable accelerator classes to a broader set of countries.",
+      "expected": { "ticker": "NVDA", "type": "regulatory", "urgency": "high" }
+    },
+    {
+      "id": "eval-02",
+      "title": "TSMC reallocates advanced packaging capacity toward NVIDIA accelerator orders",
+      "snippet": "The foundry shifted a larger share of its advanced packaging output to its biggest AI customer for the next two quarters, extending lead times for other chip designers.",
+      "expected": { "ticker": "TSM", "type": "supply-chain", "urgency": "medium" }
+    },
+    {
+      "id": "eval-03",
+      "title": "Sell-side checks flag persistent supply tightness for NVIDIA-class accelerators into next year",
+      "snippet": "Channel work by several research desks suggests demand for high-end accelerators continues to outrun what foundry and memory partners can ship this cycle.",
+      "expected": { "ticker": "NVDA", "type": "analyst", "urgency": "low" }
+    },
+    {
+      "id": "eval-04",
+      "title": "ASML quarterly filing shows record bookings and a raised full-year outlook",
+      "snippet": "The disclosure reports bookings well above the prior quarter, driven by EUV orders, and lifts full-year guidance.",
+      "expected": { "ticker": "ASML", "type": "filing", "urgency": "medium" }
+    },
+    {
+      "id": "eval-05",
+      "title": "Regional grid operator outlines five-year transmission expansion plan",
+      "snippet": "The plan prioritizes interconnection upgrades for industrial corridors and new generation projects, with construction phased through the end of the decade.",
+      "expected": { "ticker": null, "type": null, "urgency": null }
+    },
+    {
+      "id": "eval-06",
+      "title": "Specialty-gas producers form joint purchasing alliance for electronics-grade materials",
+      "snippet": "The alliance brings together a constellation of smaller suppliers to negotiate long-term contracts for neon and other gases used in chip production.",
+      "expected": { "ticker": null, "type": null, "urgency": null }
+    },
+    {
+      "id": "eval-07",
+      "title": "Constellation receives expected license renewals for two nuclear units",
+      "snippet": "The renewals were granted on the standard schedule and do not change output plans; the company had guided to this outcome since last year.",
+      "expected": { "ticker": "CEG", "type": "regulatory", "urgency": "low" }
+    },
+    {
+      "id": "eval-08",
+      "title": "Fire halts output at a TSMC advanced packaging facility",
+      "snippet": "Operations at the back-end site were suspended after a fire on the production floor; the company has not said when advanced packaging output for AI accelerators will resume.",
+      "expected": { "ticker": "TSM", "type": "supply-chain", "urgency": "high" }
+    },
+    {
+      "id": "eval-09",
+      "title": "Vertiv wins multi-year cooling contract for a hyperscale campus in Texas",
+      "snippet": "The agreement covers high-density liquid cooling across several construction phases, with first deliveries scheduled for early next year.",
+      "expected": { "ticker": "VRT", "type": "news", "urgency": "medium" }
+    },
+    {
+      "id": "eval-10",
+      "title": "TSMC raises full-year capital-spending plan in updated filing",
+      "snippet": "The updated guidance lifts planned equipment spending for the year, with most of the increase aimed at advanced nodes.",
+      "expected": { "ticker": "TSM", "type": "filing", "urgency": "medium" }
+    },
+    {
+      "id": "eval-11",
+      "title": "Sell-side analyst downgrades Vertiv on rising competition in data-center cooling",
+      "snippet": "The note argues newer entrants are pressuring pricing in liquid cooling and trims estimates for next year, while keeping a constructive long-term view.",
+      "expected": { "ticker": "VRT", "type": "analyst", "urgency": "low" }
+    },
+    {
+      "id": "eval-12",
+      "title": "Vertiv tells customers lead times for switchgear and busway components have lengthened",
+      "snippet": "The company notified data-center customers that delivery windows for key power-distribution components have extended by several weeks amid strong demand.",
+      "expected": { "ticker": "VRT", "type": "supply-chain", "urgency": "medium" }
+    },
+    {
+      "id": "eval-13",
+      "title": "TSMC moves up tool-in dates at its second Arizona fab",
+      "snippet": "The company accelerated its construction timeline, citing firm customer commitments for advanced-node output beginning next year.",
+      "expected": { "ticker": "TSM", "type": "news", "urgency": "medium" }
+    },
+    {
+      "id": "eval-14",
+      "title": "Constellation expands nuclear power agreement with a major cloud provider",
+      "snippet": "The expanded agreement adds contracted clean-energy load at two additional data-center campuses beginning next year.",
+      "expected": { "ticker": "CEG", "type": "news", "urgency": "medium" }
+    },
+    {
+      "id": "eval-15",
+      "title": "ASML pauses select system shipments pending export-license review",
+      "snippet": "The company said deliveries of certain systems to specific fabs are on hold while updated export-license terms are reviewed with authorities.",
+      "expected": { "ticker": "ASML", "type": "regulatory", "urgency": "high" }
+    }
+  ]
+}

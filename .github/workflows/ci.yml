@@ -1,0 +1,54 @@
+# CI for the Investment Intel Dashboard.
+#
+# Everything below runs fully offline: DEMO_MODE (the default) uses
+# deterministic rule-based agents over synthetic fixture data, so the whole
+# pipeline — triage, risk scoring, drafting — executes end to end in CI with
+# zero API keys and zero repository secrets.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Seed database from synthetic fixtures
+        run: npm run db:reset
+
+      # Run the morning-brief pipeline end to end against the freshly seeded
+      # db and assert the exact deterministic outputs (9 signals from 10 raw
+      # items, 5 companies rescored).
+      - name: Pipeline smoke test
+        run: |
+          npx tsx -e "
+          import { runMorningBrief } from './lib/pipeline/morning-brief';
+          const result = runMorningBrief('cron');
+          console.log(JSON.stringify(result, null, 2));
+          if (result.status !== 'completed' || result.signalsCreated !== 9 || result.assessmentsCreated !== 5) {
+            console.error('Smoke check failed: expected status=completed, signalsCreated=9, assessmentsCreated=5');
+            process.exit(1);
+          }
+          "
+
+      - name: Eval suite
+        run: npm run eval
