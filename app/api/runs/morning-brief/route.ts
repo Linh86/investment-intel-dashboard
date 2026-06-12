@@ -4,6 +4,9 @@ import {
   type RunTrigger,
 } from "@/lib/pipeline/morning-brief";
 
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+
 const TRIGGERS: RunTrigger[] = ["manual", "cron", "webhook"];
 
 export async function POST(request: Request) {
@@ -18,7 +21,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = runMorningBrief(trigger);
+    const result = await runMorningBrief(trigger);
     return NextResponse.json(result, {
       status: result.status === "failed" ? 500 : 200,
     });

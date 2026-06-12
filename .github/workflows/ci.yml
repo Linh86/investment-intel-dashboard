@@ -42,12 +42,14 @@ jobs:
         run: |
           npx tsx -e "
           import { runMorningBrief } from './lib/pipeline/morning-brief';
-          const result = runMorningBrief('cron');
-          console.log(JSON.stringify(result, null, 2));
-          if (result.status !== 'completed' || result.signalsCreated !== 9 || result.assessmentsCreated !== 5) {
-            console.error('Smoke check failed: expected status=completed, signalsCreated=9, assessmentsCreated=5');
-            process.exit(1);
-          }
+          (async () => {
+            const result = await runMorningBrief('cron');
+            console.log(JSON.stringify(result, null, 2));
+            if (result.status !== 'completed' || result.signalsCreated !== 9 || result.assessmentsCreated !== 5) {
+              console.error('Smoke check failed: expected status=completed, signalsCreated=9, assessmentsCreated=5');
+              process.exit(1);
+            }
+          })();
           "
 
       - name: Eval suite

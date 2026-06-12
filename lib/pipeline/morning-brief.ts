@@ -14,6 +14,17 @@ import {
 } from "../db/schema";
 import { CRM_MODEL, CRM_PROMPT_VERSION, draftCrmFollowUp } from "../drafting/crm";
 import { draftMemo, MEMO_MODEL, MEMO_PROMPT_VERSION } from "../drafting/memo";
+import { llmEnabled } from "../llm/claude";
+import {
+  draftMemoWithClaude,
+  MEMO_CLAUDE_MODEL,
+  MEMO_CLAUDE_PROMPT_VERSION,
+} from "../llm/memo";
+import {
+  classifyBatchWithClaude,
+  TRIAGE_CLAUDE_MODEL,
+  TRIAGE_CLAUDE_PROMPT_VERSION,
+} from "../llm/triage";
 import { RUBRIC, type Dimension } from "../scoring/rubric";
 import {
   assessCompany,
@@ -24,6 +35,7 @@ import {
 } from "../scoring/score";
 import {
   classifyRawItem,
+  type Classification,
   TRIAGE_MODEL,
   TRIAGE_PROMPT_VERSION,
 } from "./triage";
@@ -53,10 +65,13 @@ function nextId(prefix: string, existing: number): string {
   return `${prefix}-${String(existing + 1).padStart(4, "0")}`;
 }
 
-export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
-  if (process.env.DEMO_MODE === "false") {
+export async function runMorningBrief(
+  trigger: RunTrigger,
+): Promise<MorningBriefResult> {
+  const useLlm = llmEnabled();
+  if (process.env.DEMO_MODE === "false" && !useLlm) {
     throw new Error(
-      "Live LLM mode is not implemented yet (arrives with M2). Leave DEMO_MODE unset or set DEMO_MODE=true.",
+      "No model provider configured. Set LLM_PROVIDER=claude-cli to run on your Claude Code session, or leave DEMO_MODE unset for offline rule-based agents.",
     );
   }
 
@@ -116,8 +131,26 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
     const createdSignals: ScoringSignal[] = [];
     const tickersTouched = new Map<string, ScoringSignal[]>();
 
+    // Classify the batch: one Claude call when live, else per-item rules.
+    // Live failures fall back to rules so a model hiccup never fails the run.
+    let triageModel = TRIAGE_MODEL;
+    let triagePromptVersion = TRIAGE_PROMPT_VERSION;
+    const classifications = new Map<string, Classification | null>();
+    if (useLlm && pending.length > 0) {
+      try {
+        const batch = await classifyBatchWithClaude(pending, tickers);
+        for (const item of pending) classifications.set(item.id, batch.get(item.id) ?? null);
+        triageModel = TRIAGE_CLAUDE_MODEL;
+        triagePromptVersion = TRIAGE_CLAUDE_PROMPT_VERSION;
+      } catch {
+        for (const item of pending) classifications.set(item.id, classifyRawItem(item, tickers));
+      }
+    } else {
+      for (const item of pending) classifications.set(item.id, classifyRawItem(item, tickers));
+    }
+
     for (const item of pending) {
-      const classification = classifyRawItem(item, tickers);
+      const classification = classifications.get(item.id) ?? null;
       db.update(rawItems)
         .set({ triagedAt: nowIso() })
         .where(eq(rawItems.id, item.id))
@@ -161,8 +194,8 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
         status: "completed",
         startedAt: triageStarted,
         finishedAt: nowIso(),
-        model: TRIAGE_MODEL,
-        promptVersion: TRIAGE_PROMPT_VERSION,
+        model: triageModel,
+        promptVersion: triagePromptVersion,
         inputCount: pending.length,
         outputCount: created,
         costUsd: 0,
@@ -299,7 +332,22 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
       .limit(1)
       .get();
 
+    let memoModel = MEMO_MODEL;
+    let memoPromptVersion = MEMO_PROMPT_VERSION;
     for (const { company, result } of material) {
+      // Live: Claude writes the memo (same schema); on failure fall back to
+      // the deterministic drafter so the run still completes.
+      let memoContent = draftMemo({ company, assessment: result });
+      if (useLlm) {
+        try {
+          memoContent = await draftMemoWithClaude({ company, assessment: result });
+          memoModel = MEMO_CLAUDE_MODEL;
+          memoPromptVersion = MEMO_CLAUDE_PROMPT_VERSION;
+        } catch {
+          memoModel = MEMO_MODEL;
+          memoPromptVersion = MEMO_PROMPT_VERSION;
+        }
+      }
       const memoId = nextId("art", artifactCount);
       db.insert(artifacts)
         .values({
@@ -309,9 +357,9 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
           runId,
           status: "pending",
           title: `IC memo: ${company.ticker} composite ${result.previous} → ${result.composite}`,
-          contentJson: JSON.stringify(draftMemo({ company, assessment: result })),
-          model: MEMO_MODEL,
-          promptVersion: MEMO_PROMPT_VERSION,
+          contentJson: JSON.stringify(memoContent),
+          model: memoModel,
+          promptVersion: memoPromptVersion,
           createdAt: nowIso(),
         })
         .run();
@@ -364,8 +412,8 @@ export function runMorningBrief(trigger: RunTrigger): MorningBriefResult {
         status: "completed",
         startedAt: draftStarted,
         finishedAt: nowIso(),
-        model: MEMO_MODEL,
-        promptVersion: MEMO_PROMPT_VERSION,
+        model: memoModel,
+        promptVersion: memoPromptVersion,
         inputCount: material.length,
         outputCount: memosDrafted + crmDrafted,
         costUsd: 0,

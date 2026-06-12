@@ -45,8 +45,13 @@ export function RunBriefButton() {
         disabled={running}
         className="rounded-lg bg-sky-500/15 px-3.5 py-2 text-sm font-medium text-sky-300 ring-1 ring-inset ring-sky-500/30 transition-colors hover:bg-sky-500/25 disabled:cursor-default disabled:opacity-60"
       >
-        {running ? "Running…" : "Run morning brief"}
+        {running ? "Running agents…" : "Run morning brief"}
       </button>
+      {running ? (
+        <span className="max-w-64 text-right text-xs text-slate-500">
+          collect → triage → score → draft. On live Claude this takes ~30–60s.
+        </span>
+      ) : null}
       {result ? (
         <span
           className={`max-w-64 text-right text-xs ${result.status === "failed" ? "text-red-400" : "text-slate-500"}`}

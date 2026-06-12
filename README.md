@@ -104,9 +104,19 @@ curl -X POST localhost:3000/api/runs/weekly-radar  -H 'content-type: application
 curl -X POST localhost:3000/api/briefs/generate    -H 'content-type: application/json' -d '{"segmentId":"seg-eu-family"}'
 ```
 
+## Live mode (optional, no API key)
+
+By default the agents are deterministic rules, so the demo runs fully offline. To run them on a real model instead, start with the local provider:
+
+```bash
+LLM_PROVIDER=claude-cli npm run dev
+```
+
+This shells out to the locally authenticated [`claude` CLI](https://github.com/anthropics/claude-code) (Claude Code) in headless mode — it reuses your existing Claude subscription, so there is **no API key and no separate billing**. With it on, triage and the IC memo are written by Claude (validated against the same zod schemas), and the **Try it** page (`/try`) classifies and risk-assesses any headline you paste, live. If a model call ever returns invalid JSON the pipeline falls back to the rule-based agent for that step, so a run never fails. Wherever the CLI is not installed (CI, a cloud deploy) the agents stay deterministic.
+
 ## The agents
 
-Each agent is deterministic in DEMO_MODE, behind the exact zod schema a live LLM implementation would have to satisfy — swapping in a model changes the implementation, not the contract.
+Each agent is deterministic in DEMO_MODE and runs on Claude when `LLM_PROVIDER=claude-cli` is set — both implementations satisfy the exact same zod schema, so switching is an env var, not a rewrite.
 
 | Agent | Input → output | Gated? |
 | --- | --- | --- |
@@ -162,7 +172,8 @@ This repository is independent of any proprietary project: newly written code, s
 - **M3** ✅ (2026-06-10) — memo writer, review queue, CRM outbox, claim extraction on approval.
 - **M4** ✅ (2026-06-10) — weekly radar; investor briefs from approved claims only, compliance lint, client page, delivery log (adversarially verified).
 - **M5** ✅ (2026-06-10) — this README, CI + scheduled morning brief, n8n export, eval harness, screenshots.
+- **M6** ✅ (2026-06-11) — live mode via the local `claude` CLI (no API key): Claude-powered triage and memo writing behind the same schemas, with rule-based fallback, plus the **Try it** page for live analysis of any headline you paste.
 
-Deliberately out of scope — the boundary is drawn, not forgotten: live LLM mode behind the provider interface (today `DEMO_MODE=false` is explicitly rejected rather than half-implemented), live RSS/EDGAR ingestion, real HubSpot push, an authenticated client portal, and score backtesting. None is needed to evaluate the workflow, the governance, or the agents. Full plan: [docs/mvp-plan.md](docs/mvp-plan.md).
+Deliberately out of scope — the boundary is drawn, not forgotten: a hosted LLM mode behind an API-key provider (so live mode works in CI/cloud, not only where the CLI is logged in), live RSS/EDGAR ingestion, real HubSpot push, an authenticated client portal, and score backtesting. None is needed to evaluate the workflow, the governance, or the agents. Full plan: [docs/mvp-plan.md](docs/mvp-plan.md).
 
 License: [MIT](LICENSE).

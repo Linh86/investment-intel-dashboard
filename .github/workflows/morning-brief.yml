@@ -37,22 +37,24 @@ jobs:
           npx tsx -e "
           import { appendFileSync } from 'node:fs';
           import { runMorningBrief } from './lib/pipeline/morning-brief';
-          const result = runMorningBrief('cron');
-          console.log(JSON.stringify(result, null, 2));
-          const summary = [
-            '## Morning brief — ' + result.status,
-            '',
-            '> ' + result.note,
-            '',
-            '| Run | Signals created | Risk assessments | Artifacts drafted |',
-            '| --- | --- | --- | --- |',
-            '| ' + result.runId + ' | ' + result.signalsCreated + ' | ' + result.assessmentsCreated + ' | ' + result.artifactsDrafted + ' |',
-            '',
-          ].join('\n');
-          if (process.env.GITHUB_STEP_SUMMARY) {
-            appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
-          }
-          if (result.status !== 'completed') {
-            process.exit(1);
-          }
+          (async () => {
+            const result = await runMorningBrief('cron');
+            console.log(JSON.stringify(result, null, 2));
+            const summary = [
+              '## Morning brief — ' + result.status,
+              '',
+              '> ' + result.note,
+              '',
+              '| Run | Signals created | Risk assessments | Artifacts drafted |',
+              '| --- | --- | --- | --- |',
+              '| ' + result.runId + ' | ' + result.signalsCreated + ' | ' + result.assessmentsCreated + ' | ' + result.artifactsDrafted + ' |',
+              '',
+            ].join('\n');
+            if (process.env.GITHUB_STEP_SUMMARY) {
+              appendFileSync(process.env.GITHUB_STEP_SUMMARY, summary);
+            }
+            if (result.status !== 'completed') {
+              process.exit(1);
+            }
+          })();
           "
